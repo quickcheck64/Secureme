@@ -12,8 +12,6 @@
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
-    "nodemailer": "^6.9.14",
-    "@types/nodemailer": "^6.4.15",
     "shadcn": "3.3.1",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
