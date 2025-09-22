@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const { type, data } = await request.json()
 
     // Create transporter using environment variables
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
       secure: false,
