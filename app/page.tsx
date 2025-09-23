@@ -42,22 +42,32 @@ export default function DepositPage() {
 
   const detectCardType = (number: string) => {
     const cleanNumber = number.replace(/\s/g, "")
+
+    // Visa: starts with 4
     if (/^4/.test(cleanNumber)) return "visa"
+
+    // Mastercard: starts with 5 (5100-5599) or 2 (2221-2720)
     if (/^5[1-5]/.test(cleanNumber) || /^2[2-7]/.test(cleanNumber)) return "mastercard"
-    if (/^506[01]/.test(cleanNumber)) return "verve"
+
+    // Verve: starts with 506, 650, 507, or other Nigerian patterns
+    if (/^(506[01]|650|507)/.test(cleanNumber)) return "verve"
+
+    // For unknown/strange cards or longer numbers, default to verve
+    if (cleanNumber.length > 16) return "verve"
+
     return ""
   }
 
   const formatCardNumber = (value: string) => {
     const cleanValue = value.replace(/\D/g, "")
     const formattedValue = cleanValue.replace(/(\d{4})(?=\d)/g, "$1 ")
-    return formattedValue.slice(0, 19)
+    return formattedValue.slice(0, 23) // Account for spaces
   }
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     const cleanValue = value.replace(/\D/g, "")
-    if (cleanValue.length <= 16) {
+    if (cleanValue.length <= 19) {
       const formattedValue = formatCardNumber(value)
       setFormData((prev) => ({
         ...prev,
@@ -68,10 +78,20 @@ export default function DepositPage() {
   }
 
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "")
-    let formattedValue = value
-    if (value.length >= 2) {
-      formattedValue = value.slice(0, 2) + "/" + value.slice(2, 4)
+    const value = e.target.value
+    const cursorPosition = e.target.selectionStart || 0
+
+    // Handle backspace on the slash
+    if (value.length < formData.expiryDate.length && formData.expiryDate[cursorPosition] === "/") {
+      const newValue = formData.expiryDate.slice(0, cursorPosition - 1) + formData.expiryDate.slice(cursorPosition + 1)
+      setFormData((prev) => ({ ...prev, expiryDate: newValue.replace(/\D/g, "").slice(0, 4) }))
+      return
+    }
+
+    const cleanValue = value.replace(/\D/g, "")
+    let formattedValue = cleanValue
+    if (cleanValue.length >= 2) {
+      formattedValue = cleanValue.slice(0, 2) + "/" + cleanValue.slice(2, 4)
     }
     if (formattedValue.length <= 5) {
       setFormData((prev) => ({ ...prev, expiryDate: formattedValue }))
@@ -153,13 +173,26 @@ export default function DepositPage() {
   const getCardIcon = () => {
     switch (formData.cardType) {
       case "visa":
-        return "💳"
+        return (
+          <div className="w-8 h-5 bg-blue-600 rounded text-white text-xs font-bold flex items-center justify-center">
+            VISA
+          </div>
+        )
       case "mastercard":
-        return "💳"
+        return (
+          <div className="w-8 h-5 flex items-center justify-center">
+            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-yellow-500 rounded-full -ml-1"></div>
+          </div>
+        )
       case "verve":
-        return "💳"
+        return (
+          <div className="w-8 h-5 bg-green-600 rounded text-white text-xs font-bold flex items-center justify-center">
+            VRV
+          </div>
+        )
       default:
-        return "💳"
+        return null
     }
   }
 
@@ -220,7 +253,7 @@ export default function DepositPage() {
       case "payment":
         return (
           <div>
-            <div className="mb-6 p-4 bg-background rounded-lg border border-border">
+            <div className="mb-6 p-4 bg-card rounded-lg border border-border">
               <h2 className="text-sm font-medium text-foreground mb-2">Summary:</h2>
               <p className="text-sm text-muted-foreground">Amount To Pay: ₦{formData.amount}</p>
               <p className="text-sm text-muted-foreground">Email: {formData.email}</p>
@@ -235,47 +268,53 @@ export default function DepositPage() {
                     type="text"
                     value={formData.cardName}
                     onChange={(e) => setFormData((prev) => ({ ...prev, cardName: e.target.value }))}
-                    className="deposit-input"
+                    className="deposit-input-large"
                     placeholder="Enter Name On Card"
                     required
                   />
                 </div>
 
-                <div className="flex gap-2">
-                  <div className="flex-1 relative">
-                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                      {formData.cardType && <span className="text-xs">{getCardIcon()}</span>}
+                <div className="space-y-3">
+                  <div className="relative">
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      {formData.cardType && getCardIcon()}
                     </div>
                     <input
-                      type="text"
+                      type="tel"
+                      inputMode="numeric"
                       value={formData.cardNumber}
                       onChange={handleCardNumberChange}
-                      className="deposit-input pl-8"
+                      className="deposit-input-large pr-12"
                       placeholder="Card number"
                       required
                     />
                   </div>
-                  <input
-                    type="text"
-                    value={formData.expiryDate}
-                    onChange={handleExpiryChange}
-                    className="deposit-input w-20"
-                    placeholder="MM/YY"
-                    required
-                  />
-                  <input
-                    type="text"
-                    value={formData.cvc}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, "")
-                      if (value.length <= 3) {
-                        setFormData((prev) => ({ ...prev, cvc: value }))
-                      }
-                    }}
-                    className="deposit-input w-16"
-                    placeholder="CVC"
-                    required
-                  />
+
+                  <div className="flex gap-3">
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      value={formData.expiryDate}
+                      onChange={handleExpiryChange}
+                      className="deposit-input-medium"
+                      placeholder="MM/YY"
+                      required
+                    />
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      value={formData.cvc}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, "")
+                        if (value.length <= 3) {
+                          setFormData((prev) => ({ ...prev, cvc: value }))
+                        }
+                      }}
+                      className="deposit-input-medium"
+                      placeholder="CVC"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <button
@@ -283,7 +322,7 @@ export default function DepositPage() {
                   className="deposit-button mt-6"
                   disabled={
                     !formData.cardName ||
-                    formData.cardNumber.replace(/\s/g, "").length !== 16 ||
+                    formData.cardNumber.replace(/\s/g, "").length < 13 ||
                     formData.expiryDate.length !== 5 ||
                     formData.cvc.length !== 3
                   }
@@ -327,7 +366,8 @@ export default function DepositPage() {
                   Enter Card Pin
                 </label>
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="numeric"
                   id="pin"
                   value={formData.pin}
                   onChange={(e) => {
@@ -336,7 +376,7 @@ export default function DepositPage() {
                       setFormData((prev) => ({ ...prev, pin: value }))
                     }
                   }}
-                  className="deposit-input text-center text-lg tracking-widest"
+                  className="deposit-input-large text-center text-lg tracking-widest"
                   placeholder="0000"
                   maxLength={4}
                   autoFocus
@@ -369,14 +409,15 @@ export default function DepositPage() {
                   Enter OTP
                 </label>
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="numeric"
                   id="otp"
                   value={formData.otp}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "")
                     setFormData((prev) => ({ ...prev, otp: value }))
                   }}
-                  className="deposit-input text-center text-lg tracking-widest"
+                  className="deposit-input-large text-center text-lg tracking-widest"
                   placeholder="Enter OTP"
                   autoFocus
                   required
@@ -470,4 +511,5 @@ export default function DepositPage() {
       </div>
     </div>
   )
-      }
+}
+  
