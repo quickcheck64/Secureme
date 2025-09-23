@@ -180,8 +180,8 @@ body {
 
 .deposit-input:focus {
   outline: none;
-  ring: 2px solid var(--color-primary);
-  border-color: transparent;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 
 .deposit-input-large {
@@ -197,8 +197,8 @@ body {
 
 .deposit-input-large:focus {
   outline: none;
-  ring: 2px solid var(--color-primary);
-  border-color: transparent;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 
 .deposit-input-medium {
@@ -213,8 +213,8 @@ body {
 
 .deposit-input-medium:focus {
   outline: none;
-  ring: 2px solid var(--color-primary);
-  border-color: transparent;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 
 .deposit-button {
@@ -252,4 +252,4 @@ body {
 
 .deposit-button-secondary:hover {
   background-color: var(--color-accent);
-    }
+}
