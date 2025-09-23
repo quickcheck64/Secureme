@@ -164,12 +164,23 @@ const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       case "visa":
         return <div className="w-10 h-6 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">VISA</div>
       case "mastercard":
-        return (
-          <div className="w-10 h-6 relative flex items-center justify-center">
-            <div className="w-4 h-4 bg-red-500 rounded-full absolute left-0"></div>
-            <div className="w-4 h-4 bg-yellow-500 rounded-full absolute right-0"></div>
-          </div>
-        )
+  return (
+    <div className="flex items-center">
+      <div className="relative w-12 h-8 flex items-center justify-center">
+        {/* Left Circle - Red */}
+        <div className="w-6 h-6 bg-red-600 rounded-full absolute left-1"></div>
+
+        {/* Right Circle - Yellow (slightly overlapping) */}
+        <div className="w-6 h-6 bg-yellow-400 rounded-full absolute right-1"></div>
+
+        {/* Transparent overlap to blend like real logo */}
+        <div className="w-6 h-6 bg-orange-500 opacity-70 rounded-full absolute left-3"></div>
+      </div>
+
+      {/* Mastercard text */}
+      <span className="ml-2 text-xs font-bold text-gray-800">Mastercard</span>
+    </div>
+  )
       case "verve":
         return <div className="w-10 h-6 bg-green-600 rounded flex items-center justify-center text-white text-xs font-bold">VERVE</div>
       default:
