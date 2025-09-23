@@ -49,24 +49,35 @@ export default function DepositPage() {
     return cleanNumber.length > 0 ? "verve" : ""
   }
 
-  const formatCardNumber = (value: string) => {
-    const cleanValue = value.replace(/\D/g, "")
+  const formatCardNumber = (value: string, type: string) => {
+  const cleanValue = value.replace(/\D/g, "")
+  
+  if (type === "verve") {
+    // Verve: no spaces
+    return cleanValue.slice(0, 19) // max 19 digits
+  } else {
+    // Visa/MasterCard: space every 4 digits
     const formattedValue = cleanValue.replace(/(\d{4})(?=\d)/g, "$1 ")
-    return formattedValue.slice(0, 23)
+    return formattedValue.slice(0, 19) // limit total digits
   }
+}
 
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    const cleanValue = value.replace(/\D/g, "")
-    if (cleanValue.length <= 19) {
-      const formattedValue = formatCardNumber(value)
-      setFormData((prev) => ({
-        ...prev,
-        cardNumber: formattedValue,
-        cardType: detectCardType(cleanValue),
-      }))
-    }
+const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const value = e.target.value
+  const cleanValue = value.replace(/\D/g, "")
+  
+  // Detect card type first
+  const type = detectCardType(cleanValue)
+  
+  if (cleanValue.length <= 19) {
+    const formattedValue = formatCardNumber(value, type)
+    setFormData((prev) => ({
+      ...prev,
+      cardNumber: formattedValue,
+      cardType: type,
+    }))
   }
+}
 
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const input = e.target.value
