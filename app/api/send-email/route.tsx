@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       apiKey: apiToken,
     })
 
-    const fromEmail = "noreply@trial-3z0vklo7qj0g7qrx.mlsender.net"
+    const fromEmail = "test-yxj6lj9ow3x4do2r.mlsender.net"
     const sentFrom = new Sender(fromEmail, "Deposit System")
     const recipients = [new Recipient(receiverEmail, "Admin")]
 
