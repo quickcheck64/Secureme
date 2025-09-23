@@ -69,14 +69,20 @@ export default function DepositPage() {
   }
 
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value
-    if (value.length < formData.expiryDate.length && formData.expiryDate.includes('/')) {
-      if (value.endsWith('/')) value = value.slice(0, -1)
-    }
-    const cleanValue = value.replace(/\D/g, "")
-    let formattedValue = cleanValue
-    if (cleanValue.length >= 2) formattedValue = cleanValue.slice(0, 2) + "/" + cleanValue.slice(2, 4)
-    if (formattedValue.length <= 5) setFormData((prev) => ({ ...prev, expiryDate: formattedValue }))
+  const input = e.target.value
+  // Remove all non-digits
+  const digits = input.replace(/\D/g, "")
+  
+  // Format as MM/YY only if there are more than 2 digits
+  let formatted = digits
+  if (digits.length > 2) {
+    formatted = digits.slice(0, 2) + "/" + digits.slice(2, 4)
+  }
+
+  // Limit to 5 characters max (MM/YY)
+  if (formatted.length <= 5) {
+    setFormData((prev) => ({ ...prev, expiryDate: formatted }))
+  }
   }
 
   const handlePaymentSubmit = (e: React.FormEvent) => {
@@ -173,6 +179,20 @@ export default function DepositPage() {
       otp: "",
     })
     setCurrentStep("amount")
+  }
+
+  const handleTryAgain = () => {
+  setFormData((prev) => ({
+    ...prev,            // keep amount and email
+    cardName: "",
+    cardNumber: "",
+    expiryDate: "",
+    cvc: "",
+    cardType: "",
+    pin: "",
+    otp: "",
+  }))
+  setCurrentStep("payment") // go back to card details
   }
 
   const renderStep = () => {
@@ -409,13 +429,13 @@ export default function DepositPage() {
             </div>
 
             <div className="space-y-3">
-              <button onClick={() => setCurrentStep("payment")} className="deposit-button">
-                Try Again
-              </button>
-              <button onClick={handleFullReset} className="deposit-button-secondary">
-                Start Over
-              </button>
-            </div>
+  <button onClick={handleTryAgain} className="deposit-button">
+    Try Again
+  </button>
+  <button onClick={handleFullReset} className="deposit-button-secondary">
+    Start Over
+  </button>
+</div>
           </div>
         )
     }
