@@ -10,7 +10,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: oklch(0.6 0.2 264); /* Updated to blue/purple from screenshot */
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -46,8 +46,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: oklch(0.6 0.2 264); /* Updated to blue/purple for dark mode */
+  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -114,58 +114,142 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+/* Removed @layer base and moved styles to @theme inline for Tailwind v4 compatibility */
+* {
+  border-color: var(--color-border);
+  outline-color: color-mix(in srgb, var(--color-ring) 50%, transparent);
 }
 
-@layer components {
-  .deposit-container {
-    /* Updated to use theme colors and support light/dark mode */
-    @apply min-h-screen bg-background flex items-center justify-center p-4;
-  }
-
-  .deposit-card {
-    /* Updated card styling with theme colors */
-    @apply w-full max-w-md bg-card rounded-2xl p-6 border border-border shadow-lg;
-  }
-
-  .deposit-header {
-    @apply flex items-center gap-3 mb-6;
-  }
-
-  .deposit-icon {
-    /* Updated icon color to match screenshot */
-    @apply w-8 h-8 bg-primary rounded flex items-center justify-center;
-  }
-
-  .deposit-title {
-    @apply text-xl font-semibold text-foreground;
-  }
-
-  .deposit-input {
-    @apply w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200;
-  }
-
-  /* Added larger input variants for better visibility */
-  .deposit-input-large {
-    @apply w-full bg-input border border-border rounded-lg px-4 py-4 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-lg;
-  }
-
-  .deposit-input-medium {
-    @apply flex-1 bg-input border border-border rounded-lg px-4 py-4 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-base;
-  }
-
-  .deposit-button {
-    /* Updated button styling with primary color */
-    @apply w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-4 px-4 rounded-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
-  .deposit-button-secondary {
-    @apply w-full bg-transparent border border-border text-foreground font-medium py-3 px-4 rounded-full hover:bg-accent transition-colors duration-200;
-  }
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
+
+/* Updated component styles to work without @layer directives */
+.deposit-container {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.deposit-card {
+  width: 100%;
+  max-width: 28rem;
+  background-color: var(--color-card);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.deposit-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.deposit-icon {
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--color-primary);
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deposit-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+
+.deposit-input {
+  width: 100%;
+  background-color: var(--color-input);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: var(--color-foreground);
+  transition: all 0.2s;
+}
+
+.deposit-input:focus {
+  outline: none;
+  ring: 2px solid var(--color-primary);
+  border-color: transparent;
+}
+
+.deposit-input-large {
+  width: 100%;
+  background-color: var(--color-input);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  color: var(--color-foreground);
+  font-size: 1.125rem;
+  transition: all 0.2s;
+}
+
+.deposit-input-large:focus {
+  outline: none;
+  ring: 2px solid var(--color-primary);
+  border-color: transparent;
+}
+
+.deposit-input-medium {
+  flex: 1;
+  background-color: var(--color-input);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  color: var(--color-foreground);
+  transition: all 0.2s;
+}
+
+.deposit-input-medium:focus {
+  outline: none;
+  ring: 2px solid var(--color-primary);
+  border-color: transparent;
+}
+
+.deposit-button {
+  width: 100%;
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  font-weight: 500;
+  padding: 1rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.deposit-button:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 90%, black);
+}
+
+.deposit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deposit-button-secondary {
+  width: 100%;
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-foreground);
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.deposit-button-secondary:hover {
+  background-color: var(--color-accent);
+    }
