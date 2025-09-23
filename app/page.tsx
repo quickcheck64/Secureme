@@ -216,17 +216,19 @@ const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                value={formData.email}
-                onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                className="deposit-input"
-                placeholder="Enter your email address"
-                required
-              />
-            </div>
+  <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+    Email Address
+  </label>
+  <input
+    type="email"
+    id="email"
+    value={formData.email}
+    onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+    className="deposit-input text-foreground dark:text-white dark:bg-gray-800 placeholder:text-muted-foreground"
+    placeholder="Enter your email address"
+    required
+  />
+</div>
 
             <div>
               <label htmlFor="amount" className="block text-sm font-medium text-foreground mb-2">Amount To Deposit (₦)</label>
