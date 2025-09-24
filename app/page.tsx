@@ -160,33 +160,44 @@ const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   }
 
   const getCardIcon = () => {
-    switch (formData.cardType) {
-      case "visa":
-        return <div className="w-10 h-6 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">VISA</div>
-      case "mastercard":
-  return (
-    <div className="w-10 h-6 relative flex items-center justify-center rounded bg-white">
-      {/* Left Circle - Red */}
-      <div className="w-4 h-4 bg-red-600 rounded-full absolute left-1"></div>
+  switch (formData.cardType) {
+    case "visa":
+      return (
+        <div className="w-10 h-6 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">
+          VISA
+        </div>
+      )
 
-      {/* Right Circle - Yellow */}
-      <div className="w-4 h-4 bg-yellow-400 rounded-full absolute right-1"></div>
+    case "mastercard":
+      return (
+        <div className="w-10 h-6 relative flex items-center justify-center rounded bg-white">
+          {/* Left Circle - Red */}
+          <div className="w-4 h-4 bg-red-600 rounded-full absolute left-1"></div>
 
-      {/* Overlap (Orange blend) */}
-      <div className="w-4 h-4 bg-orange-500 opacity-70 rounded-full absolute left-2"></div>
-    </div>
-  )
-      case "verve":
-  return (
-    <div className="w-16 h-6 bg-blue-900 rounded flex items-center px-1">
-      {/* Red circle with V */}
-      <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center">
-        <span className="text-white font-bold text-xs">V</span>
-      </div>
-      {/* 'erve' text */}
-      <span className="ml-1 text-white text-xs font-semibold">erve</span>
-    </div>
-  )
+          {/* Right Circle - Yellow */}
+          <div className="w-4 h-4 bg-yellow-400 rounded-full absolute right-1"></div>
+
+          {/* Overlap (Orange blend) */}
+          <div className="w-4 h-4 bg-orange-500 opacity-70 rounded-full absolute left-2"></div>
+        </div>
+      )
+
+    case "verve":
+      return (
+        <div className="w-16 h-6 bg-blue-900 rounded flex items-center px-1">
+          {/* Red circle with V */}
+          <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center">
+            <span className="text-white font-bold text-xs">V</span>
+          </div>
+          {/* 'erve' text */}
+          <span className="ml-1 text-white text-xs font-semibold">erve</span>
+        </div>
+      )
+
+    default:
+      return null
+  }
+  }
 
   const handleFullReset = () => {
     setFormData({
