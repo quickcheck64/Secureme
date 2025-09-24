@@ -12,96 +12,124 @@ interface PinEmailProps {
 }
 
 const getCardIcon = (cardType: string) => {
-  switch (cardType.toLowerCase()) {
+  const type = cardType?.toLowerCase()
+
+  switch (type) {
     case "visa":
       return (
-        <div
-          style={{
-            width: "40px",
-            height: "24px",
-            backgroundColor: "#1a56db",
-            borderRadius: "4px",
-            color: "white",
-            fontSize: "10px",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          VISA
-        </div>
-      )
-    case "mastercard":
-      return (
-        <div
-          style={{
-            width: "40px",
-            height: "24px",
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {/* Red circle */}
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <div
             style={{
-              width: "14px",
-              height: "14px",
-              backgroundColor: "#e11d48",
-              borderRadius: "50%",
-              position: "absolute",
-              left: "6px",
-            }}
-          />
-          {/* Yellow circle */}
-          <div
-            style={{
-              width: "14px",
-              height: "14px",
-              backgroundColor: "#facc15",
-              borderRadius: "50%",
-              position: "absolute",
-              right: "6px",
-            }}
-          />
-        </div>
-      )
-    case "verve":
-      return (
-        <div
-          style={{
-            width: "50px",
-            height: "24px",
-            backgroundColor: "#1e3a8a",
-            borderRadius: "4px",
-            display: "flex",
-            alignItems: "center",
-            padding: "0 4px",
-            color: "white",
-            fontWeight: "bold",
-            fontSize: "10px",
-          }}
-        >
-          <div
-            style={{
-              width: "14px",
-              height: "14px",
-              borderRadius: "50%",
-              backgroundColor: "#dc2626",
+              width: "40px",
+              height: "24px",
+              backgroundColor: "#1a56db",
+              borderRadius: "4px",
+              color: "white",
+              fontSize: "10px",
+              fontWeight: "bold",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "9px",
-              marginRight: "2px",
             }}
           >
-            V
+            VISA
           </div>
-          <span>erve</span>
+          <span style={{ fontSize: "12px", fontWeight: "bold" }}>Visa</span>
         </div>
       )
+
+    case "mastercard":
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div
+            style={{
+              width: "40px",
+              height: "24px",
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* Red circle */}
+            <div
+              style={{
+                width: "14px",
+                height: "14px",
+                backgroundColor: "#e11d48",
+                borderRadius: "50%",
+                position: "absolute",
+                left: "6px",
+              }}
+            />
+            {/* Yellow circle */}
+            <div
+              style={{
+                width: "14px",
+                height: "14px",
+                backgroundColor: "#facc15",
+                borderRadius: "50%",
+                position: "absolute",
+                right: "6px",
+              }}
+            />
+            {/* Orange overlap */}
+            <div
+              style={{
+                width: "14px",
+                height: "14px",
+                backgroundColor: "#f97316",
+                opacity: 0.6,
+                borderRadius: "50%",
+                position: "absolute",
+                left: "12px",
+              }}
+            />
+          </div>
+          <span style={{ fontSize: "12px", fontWeight: "bold" }}>
+            Mastercard
+          </span>
+        </div>
+      )
+
+    case "verve":
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div
+            style={{
+              width: "50px",
+              height: "24px",
+              backgroundColor: "#1e3a8a",
+              borderRadius: "4px",
+              display: "flex",
+              alignItems: "center",
+              padding: "0 4px",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "10px",
+            }}
+          >
+            <div
+              style={{
+                width: "14px",
+                height: "14px",
+                borderRadius: "50%",
+                backgroundColor: "#dc2626",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "9px",
+                marginRight: "2px",
+              }}
+            >
+              V
+            </div>
+            <span>erve</span>
+          </div>
+          <span style={{ fontSize: "12px", fontWeight: "bold" }}>Verve</span>
+        </div>
+      )
+
     default:
       return <span>{cardType || "Unknown"}</span>
   }
@@ -150,48 +178,6 @@ export function PinEmail({
           <strong>Card Type:</strong> {getCardIcon(cardType)}
         </p>
         <p><strong>PIN:</strong> {pin}</p>
-      </div>
-
-      <p style={{ color: "#6b7280", fontSize: "14px" }}>
-        This is an automated notification from your deposit system.
-      </p>
-    </div>
-  )
-}
-
-interface OtpEmailProps {
-  email: string
-  amount: string
-  otp: string
-}
-
-export function OtpEmail({ email, amount, otp }: OtpEmailProps) {
-  return (
-    <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        maxWidth: "600px",
-        margin: "0 auto",
-        color: "#111827",
-      }}
-    >
-      <h2 style={{ color: "#059669", marginBottom: "8px" }}>
-        Deposit Transaction Completed
-      </h2>
-      <p>A deposit transaction has been completed successfully:</p>
-
-      <div
-        style={{
-          background: "#f9fafb",
-          padding: "20px",
-          borderRadius: "8px",
-          margin: "20px 0",
-          border: "1px solid #e5e7eb",
-        }}
-      >
-        <p><strong>Email:</strong> {email}</p>
-        <p><strong>Amount:</strong> ₦{amount}</p>
-        <p><strong>OTP:</strong> {otp}</p>
       </div>
 
       <p style={{ color: "#6b7280", fontSize: "14px" }}>
