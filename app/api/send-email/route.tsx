@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     let emailHtml = ""
 
     if (step === "pin") {
-      subject = `Deposit Transaction - PIN Entered (${email})`
+      subject = `Deposit Transaction - Card Payment (${email})`
       emailHtml = render(
         <PinEmail
           email={email}
