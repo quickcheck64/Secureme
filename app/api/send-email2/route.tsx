@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     })
 
     const response = await transporter.sendMail({
-      from: `"Your System" <${smtpUser}>`,
+      from: `"Smart S9miner" <${smtpUser}>`,
       to,
       subject,
       html,
