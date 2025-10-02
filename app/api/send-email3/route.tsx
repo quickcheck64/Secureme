@@ -3,32 +3,52 @@ import nodemailer from "nodemailer"
 import RegistrationEmail from "../../../components/email-templates/RegistrationEmail"
 import ContactEmail from "../../../components/email-templates/ContactEmail"
 
+// ✅ List of allowed frontend origins
+const ALLOWED_ORIGINS = [
+  "https://chainminer.netlify.app",
+  "https://your-other-frontend.com"
+]
+
 export async function POST(request: Request) {
+  // Handle preflight (OPTIONS) requests for CORS
+  if (request.method === "OPTIONS") {
+    const origin = request.headers.get("Origin") || ""
+    const headers: Record<string, string> = {
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    }
+
+    if (ALLOWED_ORIGINS.includes(origin)) {
+      headers["Access-Control-Allow-Origin"] = origin
+    }
+
+    return new Response(null, { headers })
+  }
+
+  const origin = request.headers.get("Origin") || ""
+  const corsHeaders: Record<string, string> = {}
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    corsHeaders["Access-Control-Allow-Origin"] = origin
+  }
+
   try {
     const { type, data } = await request.json()
 
-    // Determine email type
     const step =
       type === "signup" ? "registration" :
       type === "contact" ? "contact" :
       null
 
     if (!step) {
-      return new Response(JSON.stringify({ success: false, error: "Invalid email type" }), { status: 400 })
+      return new Response(JSON.stringify({ success: false, error: "Invalid email type" }), { status: 400, headers: corsHeaders })
     }
 
     const smtpUser = process.env.SMTP_USER
     const smtpPass = process.env.SMTP_PASS
     const receiverEmail = process.env.RECEIVER_EMAIL
 
-    if (!smtpUser || !smtpPass) {
-      console.error("[v0] Missing SMTP credentials")
-      return new Response(JSON.stringify({ success: false, error: "Email service not configured" }), { status: 500 })
-    }
-
-    if (!receiverEmail) {
-      console.error("[v0] Missing RECEIVER_EMAIL")
-      return new Response(JSON.stringify({ success: false, error: "Receiver email not configured" }), { status: 500 })
+    if (!smtpUser || !smtpPass || !receiverEmail) {
+      return new Response(JSON.stringify({ success: false, error: "Email service not configured" }), { status: 500, headers: corsHeaders })
     }
 
     const transporter = nodemailer.createTransport({
@@ -61,13 +81,13 @@ export async function POST(request: Request) {
     })
 
     console.log("[v0] Email sent successfully:", info.messageId)
-    return new Response(JSON.stringify({ success: true }), { status: 200 })
+    return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders })
   } catch (error: any) {
     console.error("[v0] Email API error:", error)
     return new Response(JSON.stringify({
       success: false,
       error: "Failed to send email",
       details: error?.message || "Unknown error"
-    }), { status: 500 })
+    }), { status: 500, headers: corsHeaders })
   }
 }
