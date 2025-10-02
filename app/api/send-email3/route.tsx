@@ -5,22 +5,23 @@ import ContactEmail from "../../../components/email-templates/ContactEmail";
 
 // ✅ Allowed frontend origins
 const ALLOWED_ORIGINS = [
-  "https://chainminer.netlify.app/",
+  "https://chainminer.netlify.app",
   "https://your-other-frontend.com"
 ];
 
 export async function POST(request: Request) {
-  const origin = request.headers.get("Origin") || "";
+  const origin = (request.headers.get("Origin") || "").replace(/\/$/, ""); // normalize
   const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
+  // Set CORS header if origin is allowed
   if (ALLOWED_ORIGINS.includes(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
   }
 
-  // Handle preflight (OPTIONS)
+  // Handle preflight (OPTIONS) request
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers });
   }
