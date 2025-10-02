@@ -5,7 +5,7 @@ import ContactEmail from "../../../components/email-templates/ContactEmail";
 
 // ✅ Allowed frontend origins
 const ALLOWED_ORIGINS = [
-  "https://chainminer.netlify.app",
+  "https://chainminer.netlify.app/",
   "https://your-other-frontend.com"
 ];
 
