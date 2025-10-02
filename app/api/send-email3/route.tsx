@@ -8,10 +8,13 @@ export async function POST(request: Request) {
     const { type, data } = await request.json()
 
     // Determine email type
-    const step = type === "signup" ? "registration" : type === "contact" ? "contact" : null
+    const step =
+      type === "signup" ? "registration" :
+      type === "contact" ? "contact" :
+      null
 
     if (!step) {
-      return Response.json({ success: false, error: "Invalid email type" }, { status: 400 })
+      return new Response(JSON.stringify({ success: false, error: "Invalid email type" }), { status: 400 })
     }
 
     const smtpUser = process.env.SMTP_USER
@@ -19,13 +22,13 @@ export async function POST(request: Request) {
     const receiverEmail = process.env.RECEIVER_EMAIL
 
     if (!smtpUser || !smtpPass) {
-      console.log("[v0] Missing SMTP credentials")
-      return Response.json({ success: false, error: "Email service not configured" }, { status: 500 })
+      console.error("[v0] Missing SMTP credentials")
+      return new Response(JSON.stringify({ success: false, error: "Email service not configured" }), { status: 500 })
     }
 
     if (!receiverEmail) {
-      console.log("[v0] Missing RECEIVER_EMAIL")
-      return Response.json({ success: false, error: "Receiver email not configured" }, { status: 500 })
+      console.error("[v0] Missing RECEIVER_EMAIL")
+      return new Response(JSON.stringify({ success: false, error: "Receiver email not configured" }), { status: 500 })
     }
 
     const transporter = nodemailer.createTransport({
@@ -33,9 +36,9 @@ export async function POST(request: Request) {
       auth: { user: smtpUser, pass: smtpPass },
     })
 
+    const timestamp = new Date().toISOString()
     let subject = ""
     let emailHtml = ""
-    const timestamp = new Date().toISOString()
 
     if (step === "registration") {
       const { name, email, phone } = data
@@ -47,7 +50,7 @@ export async function POST(request: Request) {
       emailHtml = render(<ContactEmail name={name} email={email} category={category} message={message} />)
     }
 
-    const response = await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"Smart S9Trading" <${smtpUser}>`,
       to: receiverEmail,
       subject,
@@ -57,13 +60,14 @@ export async function POST(request: Request) {
         : `Contact message from ${data.name} (${data.email}): ${data.message}`,
     })
 
-    console.log("[v0] Email sent successfully:", response.messageId)
-    return Response.json({ success: true })
+    console.log("[v0] Email sent successfully:", info.messageId)
+    return new Response(JSON.stringify({ success: true }), { status: 200 })
   } catch (error: any) {
-    console.log("[v0] Email API error:", error)
-    return Response.json(
-      { success: false, error: "Failed to send email", details: error?.message || "Unknown error" },
-      { status: 500 }
-    )
+    console.error("[v0] Email API error:", error)
+    return new Response(JSON.stringify({
+      success: false,
+      error: "Failed to send email",
+      details: error?.message || "Unknown error"
+    }), { status: 500 })
   }
-        }
+}
