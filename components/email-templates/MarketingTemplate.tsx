@@ -1,9 +1,10 @@
 import React from "react";
 
 export default function MarketingTemplate({
-  title = "Discover Smart S9 Trading",
-  message = `Smart S9 Trading offers a reliable way to participate in cryptocurrency markets. Our platform manages the technical details so you can focus on your decisions and strategy.`,
+  title = "Explore Smart S9 Trading",
+  message = `Smart S9 Trading is a reliable platform for participating in cryptocurrency markets. The platform provides the tools you need to explore crypto trading effectively.`,
   heroImage = "https://smarts9trading.online/bitcoin-mining-interface-with-hash-rate-charts-and.png",
+  websiteLink = "https://smarts9trading.online",
 }) {
   return (
     <div
@@ -29,12 +30,12 @@ export default function MarketingTemplate({
         <div
           style={{
             background: "linear-gradient(135deg,#22c55e 0%,#15803d 100%)",
-            padding: "25px 20px",
+            padding: "20px",
             textAlign: "center",
             color: "#fff",
           }}
         >
-          <h2 style={{ color: "#fff", margin: 0, fontSize: "22px" }}>Smart S9 Trading</h2>
+          <h2 style={{ margin: 0, fontSize: "22px" }}>Smart S9 Trading</h2>
         </div>
 
         {/* Hero Image */}
@@ -42,7 +43,7 @@ export default function MarketingTemplate({
           <img
             src={heroImage}
             alt="Crypto Trading Dashboard"
-            style={{ width: "100%", maxWidth: "560px", borderRadius: "8px" }}
+            style={{ width: "90%", maxWidth: "500px", borderRadius: "8px", display: "block", margin: "0 auto" }}
           />
         </div>
 
@@ -50,7 +51,7 @@ export default function MarketingTemplate({
         <div style={{ padding: "30px" }}>
           <h1
             style={{
-              fontSize: "24px",
+              fontSize: "22px",
               color: "#111827",
               marginBottom: "20px",
               textAlign: "center",
@@ -71,17 +72,55 @@ export default function MarketingTemplate({
             {message}
           </p>
 
-          {/* Info Section */}
+          {/* Promotional Paragraph */}
+          <div
+            style={{
+              background: "#ecfdf5",
+              border: "1px solid #16a34a",
+              padding: "20px",
+              borderRadius: "8px",
+              marginBottom: "25px",
+              textAlign: "center",
+              color: "#065f46",
+              fontSize: "15px",
+            }}
+          >
+            Earn up to <strong>70% daily profits</strong> as a trader, with guaranteed earnings on the platform.  
+            Invite active traders and get <strong>10% lifetime commission</strong> on every trade they make.
+          </div>
+
+          {/* CTA Button */}
+          <div style={{ textAlign: "center", marginBottom: "25px" }}>
+            <a
+              href={websiteLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                backgroundColor: "#22c55e",
+                color: "#fff",
+                padding: "14px 28px",
+                borderRadius: "6px",
+                textDecoration: "none",
+                fontWeight: "bold",
+                fontSize: "16px",
+                display: "inline-block",
+              }}
+            >
+              Start Trading Now
+            </a>
+          </div>
+
+          {/* Benefits Section */}
           <div
             style={{
               background: "#f8fafc",
               padding: "20px",
               borderRadius: "8px",
-              margin: "20px 0",
+              marginBottom: "25px",
             }}
           >
-            <h3 style={{ color: "#374151", margin: "0 0 15px 0", textAlign: "center" }}>
-              Benefits of Smart S9
+            <h3 style={{ color: "#374151", textAlign: "center", marginBottom: "15px" }}>
+              Platform Highlights
             </h3>
             <ul
               style={{
@@ -91,19 +130,19 @@ export default function MarketingTemplate({
                 fontSize: "15px",
               }}
             >
-              <li>Reliable platform for crypto trading</li>
-              <li>Supports a variety of cryptocurrencies</li>
-              <li>Used by a growing community</li>
-              <li>Simple and easy to use interface</li>
+              <li>Professional interface for trading cryptocurrencies</li>
+              <li>Supports multiple digital currencies</li>
+              <li>Growing community of users</li>
+              <li>Easy-to-use navigation and features</li>
             </ul>
           </div>
 
-          {/* Promotional Icon */}
-          <div style={{ textAlign: "center", margin: "30px 0" }}>
+          {/* Subtle Promotional Icon */}
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
             <img
               src="https://cdn-icons-png.flaticon.com/64/3416/3416671.png"
               alt="Promotion"
-              style={{ width: "50px", opacity: 0.8 }}
+              style={{ width: "50px", opacity: 0.7 }}
             />
           </div>
         </div>
@@ -122,21 +161,19 @@ export default function MarketingTemplate({
       >
         &copy; {new Date().getFullYear()} Smart S9 Trading. All rights reserved.
         <div style={{ marginTop: "10px" }}>
-          {/* Telegram Static Icon */}
+          {/* Telegram */}
           <a
             href="https://t.me/SmartS9Trading"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: "inline-block", marginTop: "5px", textDecoration: "none" }}
+            style={{ display: "inline-block", marginTop: "5px", textDecoration: "none", color: "#fff" }}
           >
             <img
               src="https://cdn-icons-png.flaticon.com/24/2111/2111646.png"
               alt="Telegram"
-              style={{ verticalAlign: "middle" }}
+              style={{ verticalAlign: "middle", marginRight: "5px" }}
             />
-            <span style={{ marginLeft: "5px", color: "#fff", fontSize: "13px", verticalAlign: "middle" }}>
-              Join us on Telegram
-            </span>
+            Join us on Telegram
           </a>
         </div>
       </div>
