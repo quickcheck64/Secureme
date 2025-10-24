@@ -24,10 +24,9 @@ export default function BulkEmailPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_API_AUTH_TOKEN}`,
         },
         body: JSON.stringify({
-          template: "marketing", // template handled by backend
+          template: "marketing", // handled by backend
           emails,
         }),
       });
