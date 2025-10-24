@@ -4,11 +4,6 @@ import React, { useState } from "react";
 
 export default function BulkEmailPage() {
   const [emails, setEmails] = useState("");
-  const [subject, setSubject] = useState("");
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
-  const [ctaLink, setCtaLink] = useState("");
-  const [ctaText, setCtaText] = useState("");
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<any>(null);
 
@@ -29,12 +24,9 @@ export default function BulkEmailPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_AUTH_TOKEN}`, // optional, if you set it client-side
         },
         body: JSON.stringify({
-          subject,
-          template: "marketing",
-          data: { title, message, ctaLink, ctaText },
+          template: "marketing", // this tells backend which template to use
           emails,
         }),
       });
@@ -58,71 +50,11 @@ export default function BulkEmailPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block font-medium mb-1">Subject</label>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter email subject"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium mb-1">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter main heading"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium mb-1">Message</label>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={5}
-              className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500"
-              placeholder="Type your marketing message"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block font-medium mb-1">CTA Link</label>
-              <input
-                type="url"
-                value={ctaLink}
-                onChange={(e) => setCtaLink(e.target.value)}
-                className="w-full border rounded-lg p-2.5"
-                placeholder="https://example.com"
-              />
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">CTA Text</label>
-              <input
-                type="text"
-                value={ctaText}
-                onChange={(e) => setCtaText(e.target.value)}
-                className="w-full border rounded-lg p-2.5"
-                placeholder="Learn More"
-              />
-            </div>
-          </div>
-
-          <div>
             <label className="block font-medium mb-1">Email List</label>
             <textarea
               value={emails}
               onChange={(e) => setEmails(e.target.value)}
-              rows={6}
+              rows={8}
               className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500"
               placeholder="Paste email addresses here (comma, space, or newline separated)"
               required
@@ -163,4 +95,4 @@ export default function BulkEmailPage() {
       </div>
     </div>
   );
-      }
+}
