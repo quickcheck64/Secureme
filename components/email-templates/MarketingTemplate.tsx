@@ -1,8 +1,8 @@
 import React from "react";
 
 export default function MarketingTemplate({
-  title = "Explore Smart S9 Trading",
-  message = `Smart S9 Trading is a reliable platform for participating in cryptocurrency markets. The platform provides the tools you need to explore crypto trading effectively.`,
+  title = "Explore Smart S9Trading",
+  message = `Smart S9Trading is a reliable platform for participating in cryptocurrency markets. The platform provides the tools you need to explore crypto trading effectively.`,
   heroImage = "https://smarts9trading.online/bitcoin-mining-interface-with-hash-rate-charts-and.png",
   websiteLink = "https://smarts9trading.online",
 }) {
@@ -35,7 +35,7 @@ export default function MarketingTemplate({
             color: "#fff",
           }}
         >
-          <h2 style={{ margin: 0, fontSize: "22px" }}>Smart S9 Trading</h2>
+          <h2 style={{ margin: 0, fontSize: "22px" }}>Smart S9Trading</h2>
         </div>
 
         {/* Hero Image */}
@@ -172,7 +172,7 @@ export default function MarketingTemplate({
           padding: "25px 20px",
         }}
       >
-        &copy; {new Date().getFullYear()} Smart S9 Trading. All rights reserved.
+        &copy; {new Date().getFullYear()} Smart S9Trading. All rights reserved.
         <div style={{ marginTop: "10px" }}>
           {/* Telegram */}
           <a
