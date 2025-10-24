@@ -9,42 +9,44 @@ export async function POST(request: Request) {
     // ✅ Authorization
     const authHeader = request.headers.get("Authorization");
     if (!authHeader || authHeader !== `Bearer ${AUTH_TOKEN}`) {
-      return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), { status: 401 });
+      return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+        status: 401,
+      });
     }
 
     // ✅ Extract request data
-    const { subject, template, data, emails } = await request.json();
+    const { emails } = await request.json();
 
-    if (!subject || !template || !emails) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Missing subject, template, or emails" }),
-        { status: 400 }
-      );
-    }
-
-    // 🧹 Clean email list
-    let emailList: string[] = [];
-    if (typeof emails === "string") {
-      emailList = emails
-        .split(/[\n,; ]+/)
-        .map((e) => e.trim())
-        .filter((e) => e.includes("@"));
-    } else if (Array.isArray(emails)) {
-      emailList = emails.filter((e) => e.includes("@"));
-    }
-
-    if (emailList.length === 0) {
-      return new Response(JSON.stringify({ success: false, error: "No valid email addresses provided" }), {
+    if (!emails) {
+      return new Response(JSON.stringify({ success: false, error: "Missing emails" }), {
         status: 400,
       });
     }
 
-    // ✅ Gmail SMTP
+    // 🧹 Clean email list
+    const emailList = Array.isArray(emails)
+      ? emails.filter((e) => e.includes("@"))
+      : emails
+          .split(/[\n,; ]+/)
+          .map((e) => e.trim())
+          .filter((e) => e.includes("@"));
+
+    if (emailList.length === 0) {
+      return new Response(
+        JSON.stringify({ success: false, error: "No valid email addresses provided" }),
+        { status: 400 }
+      );
+    }
+
+    // ✅ Gmail SMTP Setup
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
 
     if (!smtpUser || !smtpPass) {
-      return new Response(JSON.stringify({ success: false, error: "Gmail SMTP not configured" }), { status: 500 });
+      return new Response(
+        JSON.stringify({ success: false, error: "Gmail SMTP not configured" }),
+        { status: 500 }
+      );
     }
 
     const transporter = nodemailer.createTransport({
@@ -55,14 +57,16 @@ export async function POST(request: Request) {
       },
     });
 
-    // ✅ Choose and render template
-    let html = "";
-    if (template === "marketing") {
-      const { title, message, ctaLink, ctaText } = data;
-      html = render(<MarketingTemplate title={title} message={message} ctaLink={ctaLink} ctaText={ctaText} />);
-    } else {
-      return new Response(JSON.stringify({ success: false, error: "Unknown template name" }), { status: 400 });
-    }
+    // ✅ Use fixed template and subject
+    const subject = "Smart S9 Trading – New Investment Opportunity";
+    const html = render(
+      <MarketingTemplate
+        title="Earn Daily Profits with Smart S9"
+        message="Our automated trading system continues to deliver consistent returns. Join thousands of users enjoying up to 70% daily profit with instant payouts."
+        ctaLink="https://smarts9.com/dashboard"
+        ctaText="Start Trading Now"
+      />
+    );
 
     // ✅ Send emails sequentially
     let sentCount = 0;
@@ -83,7 +87,6 @@ export async function POST(request: Request) {
         failedCount++;
       }
 
-      // small delay between sends (1.5s)
       await new Promise((res) => setTimeout(res, 1500));
     }
 
@@ -102,4 +105,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-                          }
+}
