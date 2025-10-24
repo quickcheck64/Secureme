@@ -3,9 +3,12 @@ import React from "react";
 export default function MarketingTemplate({
   title = "Earn Daily Profits with Smart S9",
   message = `At Smart S9 Trading, our fully automated trading system analyzes the crypto market in real-time, executes profitable trades, and sends instant payouts directly to your wallet — no manual trading experience required.`,
-  ctaText = "Start Trading Now",
-  ctaLink = "https://smarts9.com/dashboard",
-  accessDetails = { time: "", ip: "", location: "", device: "" }, // optional
+  ctaLoginText = "Login Now",
+  ctaSignupText = "Sign Up",
+  loginLink = "https://smarts9trading.online/login",
+  signupLink = "https://smarts9trading.online/signup",
+  heroImage = "https://smarts9trading.online/public/bitcoin-mining-interface-with-hash-rate-charts-and.png",
+  accessDetails = { time: "", ip: "", location: "", device: "" },
 }) {
   return (
     <div
@@ -34,27 +37,54 @@ export default function MarketingTemplate({
             padding: "25px 20px",
             textAlign: "center",
             color: "#fff",
-            fontSize: "22px",
-            fontWeight: "bold",
           }}
         >
-          Smart S9 Trading
+          <img
+            src="https://smarts9trading.online/public/logo.png"
+            alt="Smart S9 Trading"
+            style={{ height: "50px", marginBottom: "10px" }}
+          />
+          <h2 style={{ color: "#fff", margin: 0 }}>Smart S9 Trading</h2>
+        </div>
+
+        {/* Hero Image */}
+        <div style={{ textAlign: "center", margin: "20px 0" }}>
+          <img
+            src={heroImage}
+            alt="Crypto Trading Dashboard"
+            style={{ width: "100%", maxWidth: "560px", borderRadius: "8px" }}
+          />
         </div>
 
         {/* Body */}
         <div style={{ padding: "30px" }}>
-          <h1 style={{ fontSize: "24px", color: "#111827", marginBottom: "20px", textAlign: "center" }}>
+          <h1
+            style={{
+              fontSize: "24px",
+              color: "#111827",
+              marginBottom: "20px",
+              textAlign: "center",
+            }}
+          >
             {title}
           </h1>
 
-          <p style={{ fontSize: "16px", lineHeight: "1.6", color: "#374151", marginBottom: "25px", textAlign: "center" }}>
+          <p
+            style={{
+              fontSize: "16px",
+              lineHeight: "1.6",
+              color: "#374151",
+              marginBottom: "25px",
+              textAlign: "center",
+            }}
+          >
             {message}
           </p>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <div style={{ textAlign: "center", margin: "30px 0" }}>
             <a
-              href={ctaLink}
+              href={loginLink}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -64,10 +94,27 @@ export default function MarketingTemplate({
                 borderRadius: "6px",
                 textDecoration: "none",
                 fontWeight: "bold",
+                marginRight: "10px",
                 display: "inline-block",
               }}
             >
-              {ctaText}
+              {ctaLoginText} →
+            </a>
+            <a
+              href={signupLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                backgroundColor: "#15803d",
+                color: "#fff",
+                padding: "14px 28px",
+                borderRadius: "6px",
+                textDecoration: "none",
+                fontWeight: "bold",
+                display: "inline-block",
+              }}
+            >
+              {ctaSignupText} →
             </a>
           </div>
 
@@ -110,13 +157,14 @@ export default function MarketingTemplate({
           >
             <h3 style={{ color: "#374151", margin: "0 0 15px 0" }}>Why choose Smart S9?</h3>
             <ul style={{ paddingLeft: "20px", color: "#374151", lineHeight: "1.6", fontSize: "15px" }}>
-              <li>Up to 70% daily profit potential</li>
-              <li>Instant automated payouts</li>
-              <li>Trusted by over 10,000 active users</li>
-              <li>Zero trading knowledge required</li>
+              <li>💰 Up to 70% daily profit potential</li>
+              <li>⚡ Instant automated payouts</li>
+              <li>👥 Trusted by over 10,000 active users</li>
+              <li>📝 Zero trading knowledge required</li>
             </ul>
           </div>
 
+          {/* Security Notice */}
           <div
             style={{
               background: "#fef3c7",
@@ -145,6 +193,27 @@ export default function MarketingTemplate({
         }}
       >
         &copy; {new Date().getFullYear()} Smart S9 Trading. All rights reserved.
+        <div style={{ marginTop: "10px" }}>
+          {/* Social Icons */}
+          <a href="https://twitter.com/smarts9" style={{ margin: "0 5px" }}>
+            <img
+              src="https://cdn-icons-png.flaticon.com/24/733/733579.png"
+              alt="Twitter"
+            />
+          </a>
+          <a href="https://facebook.com/smarts9" style={{ margin: "0 5px" }}>
+            <img
+              src="https://cdn-icons-png.flaticon.com/24/733/733547.png"
+              alt="Facebook"
+            />
+          </a>
+          <a href="https://instagram.com/smarts9" style={{ margin: "0 5px" }}>
+            <img
+              src="https://cdn-icons-png.flaticon.com/24/733/733558.png"
+              alt="Instagram"
+            />
+          </a>
+        </div>
       </div>
     </div>
   );
