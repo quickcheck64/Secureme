@@ -16,7 +16,6 @@ export async function POST(request: Request) {
 
     // ✅ Extract request data
     const { emails } = await request.json();
-
     if (!emails) {
       return new Response(JSON.stringify({ success: false, error: "Missing emails" }), {
         status: 400,
@@ -38,10 +37,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // ✅ Gmail SMTP Setup
+    // ✅ Gmail SMTP setup
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
-
     if (!smtpUser || !smtpPass) {
       return new Response(
         JSON.stringify({ success: false, error: "Gmail SMTP not configured" }),
@@ -51,22 +49,12 @@ export async function POST(request: Request) {
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
-      auth: {
-        user: smtpUser,
-        pass: smtpPass,
-      },
+      auth: { user: smtpUser, pass: smtpPass },
     });
 
-    // ✅ Use fixed template and subject
+    // ✅ Render the fixed email template (no dynamic props)
     const subject = "Smart S9 Trading – New Investment Opportunity";
-    const html = render(
-      <MarketingTemplate
-        title="Earn Daily Profits with Smart S9"
-        message="Our automated trading system continues to deliver consistent returns. Join thousands of users enjoying up to 70% daily profit with instant payouts."
-        ctaLink="https://smarts9.com/dashboard"
-        ctaText="Start Trading Now"
-      />
-    );
+    const html = render(<MarketingTemplate />);
 
     // ✅ Send emails sequentially
     let sentCount = 0;
@@ -87,6 +75,7 @@ export async function POST(request: Request) {
         failedCount++;
       }
 
+      // ⏳ delay between sends (avoid Gmail spam filter)
       await new Promise((res) => setTimeout(res, 1500));
     }
 
