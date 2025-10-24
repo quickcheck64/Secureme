@@ -1,6 +1,11 @@
-import * as React from "react";
+import React from "react";
 
-export default function MarketingTemplate() {
+export default function MarketingTemplate({
+  title = "Earn Daily Profits with Smart S9",
+  message = `At Smart S9 Trading, our fully automated trading system analyzes the crypto market in real-time, executes profitable trades, and sends instant payouts directly to your wallet — no manual trading experience required.`,
+  ctaText = "Start Trading Now",
+  ctaLink = "https://smarts9.com/dashboard",
+}) {
   return (
     <div
       style={{
@@ -8,6 +13,7 @@ export default function MarketingTemplate() {
         backgroundColor: "#f4f4f7",
         padding: "40px 0",
         color: "#333",
+        width: "100%",
       }}
     >
       <div
@@ -27,7 +33,7 @@ export default function MarketingTemplate() {
             color: "#ffffff",
             padding: "25px 20px",
             textAlign: "center",
-            fontSize: "20px",
+            fontSize: "22px",
             fontWeight: "bold",
           }}
         >
@@ -44,7 +50,7 @@ export default function MarketingTemplate() {
               textAlign: "center",
             }}
           >
-            Earn Daily Profits with Smart S9
+            {title}
           </h2>
 
           <p
@@ -55,29 +61,13 @@ export default function MarketingTemplate() {
               marginBottom: "25px",
             }}
           >
-            At <strong>Smart S9 Trading</strong>, our fully automated trading
-            system analyzes the crypto market in real-time, executes profitable
-            trades, and sends instant payouts directly to your wallet — no
-            manual trading experience required.
-          </p>
-
-          <p
-            style={{
-              fontSize: "16px",
-              lineHeight: "1.6",
-              color: "#444",
-              marginBottom: "25px",
-            }}
-          >
-            Join thousands of active users earning consistent profits daily.
-            With Smart S9, you can grow your portfolio automatically with
-            minimal risk and full transparency.
+            {message}
           </p>
 
           {/* CTA Button */}
           <div style={{ textAlign: "center", margin: "30px 0" }}>
             <a
-              href="https://smarts9.com/dashboard"
+              href={ctaLink}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -90,7 +80,7 @@ export default function MarketingTemplate() {
                 display: "inline-block",
               }}
             >
-              Start Trading Now
+              {ctaText}
             </a>
           </div>
 
