@@ -14,86 +14,99 @@ export default function MarketingTemplate({
   ctaText,
 }: MarketingTemplateProps) {
   return (
-    <html>
-      <body
+    <div
+      style={{
+        fontFamily: "'Helvetica Neue', Arial, sans-serif",
+        backgroundColor: "#f4f4f7",
+        padding: "40px 0",
+        color: "#333",
+      }}
+    >
+      <div
         style={{
-          fontFamily: "Arial, sans-serif",
-          backgroundColor: "#f9f9f9",
-          padding: "20px",
-          color: "#333",
+          backgroundColor: "#ffffff",
+          maxWidth: "600px",
+          margin: "0 auto",
+          borderRadius: "10px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+          overflow: "hidden",
         }}
       >
-        <table
-          width="100%"
+        {/* Header */}
+        <div
           style={{
-            maxWidth: "600px",
-            margin: "0 auto",
-            backgroundColor: "#ffffff",
-            borderRadius: "10px",
-            overflow: "hidden",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            backgroundColor: "#0057e7",
+            color: "#ffffff",
+            padding: "25px 20px",
+            textAlign: "center",
+            fontSize: "20px",
+            fontWeight: "bold",
           }}
         >
-          <tr>
-            <td
-              style={{
-                backgroundColor: "#0D6EFD",
-                color: "#ffffff",
-                textAlign: "center",
-                padding: "20px 10px",
-              }}
-            >
-              <h1 style={{ margin: 0, fontSize: "24px" }}>Smart S9 Trading</h1>
-            </td>
-          </tr>
+          Smart S9 Trading
+        </div>
 
-          <tr>
-            <td style={{ padding: "30px 25px" }}>
-              <h2 style={{ color: "#222", marginTop: 0 }}>{title}</h2>
-              <p style={{ lineHeight: "1.6", fontSize: "15px" }}>{message}</p>
+        {/* Body */}
+        <div style={{ padding: "30px 25px" }}>
+          <h2 style={{ fontSize: "22px", marginBottom: "15px", color: "#111" }}>
+            {title}
+          </h2>
+          <p
+            style={{
+              fontSize: "16px",
+              lineHeight: "1.6",
+              color: "#444",
+              marginBottom: "25px",
+            }}
+            dangerouslySetInnerHTML={{ __html: message }}
+          ></p>
 
-              {ctaLink && (
-                <div style={{ textAlign: "center", marginTop: "25px" }}>
-                  <a
-                    href={ctaLink}
-                    style={{
-                      backgroundColor: "#0D6EFD",
-                      color: "#fff",
-                      textDecoration: "none",
-                      padding: "12px 24px",
-                      borderRadius: "6px",
-                      fontWeight: "bold",
-                      display: "inline-block",
-                    }}
-                  >
-                    {ctaText || "Learn More"}
-                  </a>
-                </div>
-              )}
-            </td>
-          </tr>
-
-          <tr>
-            <td
-              style={{
-                backgroundColor: "#f1f1f1",
-                textAlign: "center",
-                padding: "15px",
-                fontSize: "13px",
-                color: "#777",
-              }}
-            >
-              © {new Date().getFullYear()} Smart S9 Trading. All rights reserved.<br />
+          {ctaLink && ctaText && (
+            <div style={{ textAlign: "center", marginBottom: "30px" }}>
               <a
-                href="#"
-                style={{ color: "#0D6EFD", textDecoration: "none" }}
+                href={ctaLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  backgroundColor: "#0057e7",
+                  color: "#ffffff",
+                  padding: "12px 24px",
+                  borderRadius: "6px",
+                  textDecoration: "none",
+                  fontWeight: "bold",
+                  display: "inline-block",
+                }}
               >
-                Unsubscribe
+                {ctaText}
               </a>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
+            </div>
+          )}
+
+          <p
+            style={{
+              fontSize: "13px",
+              color: "#888",
+              marginTop: "30px",
+              textAlign: "center",
+            }}
+          >
+            This email was sent to you by Smart S9 Trading.  
+            If you no longer wish to receive updates, please ignore this message.
+          </p>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: "12px",
+          color: "#999",
+          marginTop: "20px",
+        }}
+      >
+        © {new Date().getFullYear()} Smart S9 Trading. All rights reserved.
+      </div>
+    </div>
   );
 }
