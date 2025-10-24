@@ -24,9 +24,10 @@ export default function BulkEmailPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_API_AUTH_TOKEN}`,
         },
         body: JSON.stringify({
-          template: "marketing", // this tells backend which template to use
+          template: "marketing", // template handled by backend
           emails,
         }),
       });
@@ -80,7 +81,9 @@ export default function BulkEmailPage() {
         {result && (
           <div
             className={`mt-6 p-4 rounded-lg border ${
-              result.success ? "border-green-400 bg-green-50" : "border-red-400 bg-red-50"
+              result.success
+                ? "border-green-400 bg-green-50"
+                : "border-red-400 bg-red-50"
             }`}
           >
             {result.success ? (
