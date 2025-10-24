@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     for (const email of emailList) {
       try {
         await transporter.sendMail({
-          from: `"Smart S9 Trading" <${smtpUser}>`,
+          from: `"Smart S9Trading" <${smtpUser}>`,
           to: email,
           subject,
           html,
