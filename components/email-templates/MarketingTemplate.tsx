@@ -1,14 +1,9 @@
 import React from "react";
 
 export default function MarketingTemplate({
-  title = "Earn Daily Profits with Smart S9",
-  message = `At Smart S9 Trading, our fully automated trading system analyzes the crypto market in real-time, executes profitable trades, and sends instant payouts directly to your wallet — no manual trading experience required.`,
-  ctaLoginText = "Login Now",
-  ctaSignupText = "Sign Up",
-  loginLink = "https://smarts9trading.online/login",
-  signupLink = "https://smarts9trading.online/signup",
-  heroImage = "https://smarts9trading.online/public/bitcoin-mining-interface-with-hash-rate-charts-and.png",
-  accessDetails = { time: "", ip: "", location: "", device: "" },
+  title = "Discover Smart S9 Trading",
+  message = `Smart S9 Trading offers a reliable way to participate in cryptocurrency markets. Our platform manages the technical details so you can focus on your decisions and strategy.`,
+  heroImage = "https://smarts9trading.online/bitcoin-mining-interface-with-hash-rate-charts-and.png",
 }) {
   return (
     <div
@@ -39,12 +34,7 @@ export default function MarketingTemplate({
             color: "#fff",
           }}
         >
-          <img
-            src="https://smarts9trading.online/public/logo.png"
-            alt="Smart S9 Trading"
-            style={{ height: "50px", marginBottom: "10px" }}
-          />
-          <h2 style={{ color: "#fff", margin: 0 }}>Smart S9 Trading</h2>
+          <h2 style={{ color: "#fff", margin: 0, fontSize: "22px" }}>Smart S9 Trading</h2>
         </div>
 
         {/* Hero Image */}
@@ -81,71 +71,6 @@ export default function MarketingTemplate({
             {message}
           </p>
 
-          {/* CTA Buttons */}
-          <div style={{ textAlign: "center", margin: "30px 0" }}>
-            <a
-              href={loginLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                backgroundColor: "#22c55e",
-                color: "#fff",
-                padding: "14px 28px",
-                borderRadius: "6px",
-                textDecoration: "none",
-                fontWeight: "bold",
-                marginRight: "10px",
-                display: "inline-block",
-              }}
-            >
-              {ctaLoginText} →
-            </a>
-            <a
-              href={signupLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                backgroundColor: "#15803d",
-                color: "#fff",
-                padding: "14px 28px",
-                borderRadius: "6px",
-                textDecoration: "none",
-                fontWeight: "bold",
-                display: "inline-block",
-              }}
-            >
-              {ctaSignupText} →
-            </a>
-          </div>
-
-          {/* Optional Access Details */}
-          {accessDetails.time && (
-            <div
-              style={{
-                background: "#ecfdf5",
-                border: "2px solid #16a34a",
-                padding: "20px",
-                borderRadius: "12px",
-                margin: "25px 0",
-                textAlign: "center",
-              }}
-            >
-              <h3 style={{ color: "#15803d", margin: "0 0 10px 0" }}>Access Details</h3>
-              <div style={{ fontSize: "16px", margin: "8px 0", color: "#065f46" }}>
-                <strong>Time:</strong> {accessDetails.time}
-              </div>
-              <div style={{ fontSize: "16px", margin: "8px 0", color: "#065f46" }}>
-                <strong>IP Address:</strong> {accessDetails.ip}
-              </div>
-              <div style={{ fontSize: "16px", margin: "8px 0", color: "#065f46" }}>
-                <strong>Location:</strong> {accessDetails.location}
-              </div>
-              <div style={{ fontSize: "16px", margin: "8px 0", color: "#065f46" }}>
-                <strong>Device:</strong> {accessDetails.device}
-              </div>
-            </div>
-          )}
-
           {/* Info Section */}
           <div
             style={{
@@ -155,28 +80,31 @@ export default function MarketingTemplate({
               margin: "20px 0",
             }}
           >
-            <h3 style={{ color: "#374151", margin: "0 0 15px 0" }}>Why choose Smart S9?</h3>
-            <ul style={{ paddingLeft: "20px", color: "#374151", lineHeight: "1.6", fontSize: "15px" }}>
-              <li>💰 Up to 70% daily profit potential</li>
-              <li>⚡ Instant automated payouts</li>
-              <li>👥 Trusted by over 10,000 active users</li>
-              <li>📝 Zero trading knowledge required</li>
+            <h3 style={{ color: "#374151", margin: "0 0 15px 0", textAlign: "center" }}>
+              Benefits of Smart S9
+            </h3>
+            <ul
+              style={{
+                paddingLeft: "20px",
+                color: "#374151",
+                lineHeight: "1.8",
+                fontSize: "15px",
+              }}
+            >
+              <li>Reliable platform for crypto trading</li>
+              <li>Supports a variety of cryptocurrencies</li>
+              <li>Used by a growing community</li>
+              <li>Simple and easy to use interface</li>
             </ul>
           </div>
 
-          {/* Security Notice */}
-          <div
-            style={{
-              background: "#fef3c7",
-              border: "1px solid #fbbf24",
-              padding: "15px",
-              borderRadius: "8px",
-              margin: "20px 0",
-              fontSize: "14px",
-              color: "#92400e",
-            }}
-          >
-            <strong>⚠ Security Notice:</strong> Never share your login details. If this wasn’t you, please contact support immediately.
+          {/* Promotional Icon */}
+          <div style={{ textAlign: "center", margin: "30px 0" }}>
+            <img
+              src="https://cdn-icons-png.flaticon.com/64/3416/3416671.png"
+              alt="Promotion"
+              style={{ width: "50px", opacity: 0.8 }}
+            />
           </div>
         </div>
       </div>
@@ -194,24 +122,21 @@ export default function MarketingTemplate({
       >
         &copy; {new Date().getFullYear()} Smart S9 Trading. All rights reserved.
         <div style={{ marginTop: "10px" }}>
-          {/* Social Icons */}
-          <a href="https://twitter.com/smarts9" style={{ margin: "0 5px" }}>
+          {/* Telegram Static Icon */}
+          <a
+            href="https://t.me/SmartS9Trading"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: "inline-block", marginTop: "5px", textDecoration: "none" }}
+          >
             <img
-              src="https://cdn-icons-png.flaticon.com/24/733/733579.png"
-              alt="Twitter"
+              src="https://cdn-icons-png.flaticon.com/24/2111/2111646.png"
+              alt="Telegram"
+              style={{ verticalAlign: "middle" }}
             />
-          </a>
-          <a href="https://facebook.com/smarts9" style={{ margin: "0 5px" }}>
-            <img
-              src="https://cdn-icons-png.flaticon.com/24/733/733547.png"
-              alt="Facebook"
-            />
-          </a>
-          <a href="https://instagram.com/smarts9" style={{ margin: "0 5px" }}>
-            <img
-              src="https://cdn-icons-png.flaticon.com/24/733/733558.png"
-              alt="Instagram"
-            />
+            <span style={{ marginLeft: "5px", color: "#fff", fontSize: "13px", verticalAlign: "middle" }}>
+              Join us on Telegram
+            </span>
           </a>
         </div>
       </div>
