@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     });
 
     // ✅ Render the fixed email template (handles message + CTA)
-    const subject = "Smart S9 Trading – New Investment Opportunity";
+    const subject = "Smart S9Trading – New Investment Opportunity";
     const html = render(<MarketingTemplate />);
 
     // ✅ Send emails sequentially
