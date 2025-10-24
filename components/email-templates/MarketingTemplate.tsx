@@ -53,8 +53,26 @@ export default function MarketingTemplate({
           />
         </div>
 
+        {/* Referral + Daily Earnings Banner */}
+        <div
+          style={{
+            background: "linear-gradient(90deg,#fcd34d,#fbbf24)",
+            color: "#111827",
+            padding: "15px",
+            borderRadius: "8px",
+            textAlign: "center",
+            fontWeight: 600,
+            fontSize: "15px",
+            margin: "0 30px 25px 30px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+          }}
+        >
+          Earn <strong>70% daily profit</strong> on every investment or trade!  
+          Invite traders and get <strong>10% lifetime commission</strong> on all trades or investments they make.
+        </div>
+
         {/* Body */}
-        <div style={{ padding: "30px" }}>
+        <div style={{ padding: "0 30px 30px 30px" }}>
           <h1
             style={{
               fontSize: "22px",
@@ -77,24 +95,6 @@ export default function MarketingTemplate({
           >
             {message}
           </p>
-
-          {/* Promotional Paragraph */}
-          <div
-            style={{
-              background: "#ecfdf5",
-              border: "1px solid #16a34a",
-              padding: "20px",
-              borderRadius: "8px",
-              marginBottom: "25px",
-              textAlign: "center",
-              color: "#065f46",
-              fontSize: "15px",
-              fontWeight: 500,
-            }}
-          >
-            Earn <strong>70% daily profit</strong> on every investment or trade as a trader.  
-            Additionally, receive <strong>10% lifetime commission</strong> on all trades or investments made by the people you refer to Smart S9 Trading.
-          </div>
 
           {/* CTA Button */}
           <div style={{ textAlign: "center", marginBottom: "25px" }}>
