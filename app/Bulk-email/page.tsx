@@ -40,11 +40,11 @@ export default function BulkEmailPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-[#0B0C10] transition-colors duration-300 px-4 py-10">
-      <div className="w-full max-w-md bg-card dark:bg-[#1F2833] border border-border dark:border-[#45A29E]/20 rounded-2xl shadow-lg p-8">
+    <div className="deposit-container">
+      <div className="deposit-card">
         {/* Header */}
-        <div className="flex items-center justify-center mb-6">
-          <div className="w-10 h-10 rounded-full bg-[#45A29E] flex items-center justify-center mr-3">
+        <div className="deposit-header">
+          <div className="deposit-icon">
             <svg
               className="w-5 h-5 text-white"
               fill="none"
@@ -56,56 +56,52 @@ export default function BulkEmailPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 8v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-foreground dark:text-white">Bulk Email Sender</h1>
+          <h1 className="deposit-title">Bulk Email Sender</h1>
         </div>
 
-        <p className="text-sm text-muted-foreground dark:text-gray-400 mb-8 text-center">
+        <p className="text-sm text-muted-foreground mb-8 text-center">
           Upload or paste email addresses below to send marketing messages instantly.
         </p>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Email List
             </label>
             <textarea
               value={emails}
               onChange={(e) => setEmails(e.target.value)}
               rows={8}
-              className="w-full rounded-lg border border-border dark:border-[#45A29E]/30 bg-white dark:bg-[#0B0C10] 
-                         text-gray-900 dark:text-gray-100 p-3 text-sm focus:ring-2 focus:ring-[#45A29E] outline-none"
+              className="deposit-input"
               placeholder="Paste email addresses here (comma, space, or newline separated)"
               required
             />
-            <div className="text-xs text-muted-foreground dark:text-gray-500 mt-2">
+            <div className="text-xs text-muted-foreground mt-2">
               Or upload from file:
             </div>
             <input
               type="file"
               accept=".txt,.csv"
               onChange={handleFileUpload}
-              className="mt-1 text-sm text-muted-foreground dark:text-gray-400"
+              className="mt-1 text-sm text-muted-foreground"
             />
           </div>
 
           <button
             type="submit"
             disabled={sending}
-            className="w-full py-3 rounded-lg font-medium bg-[#45A29E] hover:bg-[#66FCF1] hover:text-gray-900 
-                       text-white dark:text-gray-900 transition-all shadow-md disabled:bg-gray-500"
+            className="deposit-button"
           >
             {sending ? "Sending..." : "Send Emails"}
           </button>
         </form>
 
-        {/* Result message */}
+        {/* Result */}
         {result && (
           <div
             className={`mt-6 p-4 rounded-lg border ${
-              result.success
-                ? "border-green-500 bg-green-50 dark:bg-green-900/20"
-                : "border-red-500 bg-red-50 dark:bg-red-900/20"
+              result.success ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-red-500 bg-red-50 dark:bg-red-900/20"
             }`}
           >
             {result.success ? (
