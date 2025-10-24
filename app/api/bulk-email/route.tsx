@@ -2,18 +2,8 @@ import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import MarketingTemplate from "../../../components/email-templates/MarketingTemplate";
 
-const AUTH_TOKEN = process.env.API_AUTH_TOKEN;
-
 export async function POST(request: Request) {
   try {
-    // ✅ Authorization
-    const authHeader = request.headers.get("Authorization");
-    if (!authHeader || authHeader !== `Bearer ${AUTH_TOKEN}`) {
-      return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
-        status: 401,
-      });
-    }
-
     // ✅ Extract request data
     const { emails } = await request.json();
     if (!emails) {
@@ -52,7 +42,7 @@ export async function POST(request: Request) {
       auth: { user: smtpUser, pass: smtpPass },
     });
 
-    // ✅ Render the fixed email template (no dynamic props)
+    // ✅ Render the fixed email template (handles message + CTA)
     const subject = "Smart S9 Trading – New Investment Opportunity";
     const html = render(<MarketingTemplate />);
 
