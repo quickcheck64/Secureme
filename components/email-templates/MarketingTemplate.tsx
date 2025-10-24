@@ -43,7 +43,13 @@ export default function MarketingTemplate({
           <img
             src={heroImage}
             alt="Crypto Trading Dashboard"
-            style={{ width: "90%", maxWidth: "500px", borderRadius: "8px", display: "block", margin: "0 auto" }}
+            style={{
+              width: "95%",
+              maxWidth: "480px",
+              borderRadius: "8px",
+              display: "block",
+              margin: "0 auto",
+            }}
           />
         </div>
 
@@ -83,10 +89,11 @@ export default function MarketingTemplate({
               textAlign: "center",
               color: "#065f46",
               fontSize: "15px",
+              fontWeight: 500,
             }}
           >
-            Earn up to <strong>70% daily profits</strong> as a trader, with guaranteed earnings on the platform.  
-            Invite active traders and get <strong>10% lifetime commission</strong> on every trade they make.
+            Earn <strong>70% daily profit</strong> on every investment or trade as a trader.  
+            Additionally, receive <strong>10% lifetime commission</strong> on all trades or investments made by the people you refer to Smart S9 Trading.
           </div>
 
           {/* CTA Button */}
@@ -119,7 +126,13 @@ export default function MarketingTemplate({
               marginBottom: "25px",
             }}
           >
-            <h3 style={{ color: "#374151", textAlign: "center", marginBottom: "15px" }}>
+            <h3
+              style={{
+                color: "#374151",
+                textAlign: "center",
+                marginBottom: "15px",
+              }}
+            >
               Platform Highlights
             </h3>
             <ul
@@ -132,8 +145,8 @@ export default function MarketingTemplate({
             >
               <li>Professional interface for trading cryptocurrencies</li>
               <li>Supports multiple digital currencies</li>
-              <li>Growing community of users</li>
-              <li>Easy-to-use navigation and features</li>
+              <li>Growing community of traders and investors</li>
+              <li>Simple, easy-to-use navigation and features</li>
             </ul>
           </div>
 
@@ -166,7 +179,12 @@ export default function MarketingTemplate({
             href="https://t.me/SmartS9Trading"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: "inline-block", marginTop: "5px", textDecoration: "none", color: "#fff" }}
+            style={{
+              display: "inline-block",
+              marginTop: "5px",
+              textDecoration: "none",
+              color: "#fff",
+            }}
           >
             <img
               src="https://cdn-icons-png.flaticon.com/24/2111/2111646.png"
