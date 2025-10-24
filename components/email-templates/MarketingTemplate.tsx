@@ -3,7 +3,7 @@ import React from "react";
 export default function MarketingTemplate({
   title = "Explore Smart S9Trading",
   message = `Smart S9Trading is a reliable platform for participating in cryptocurrency markets. The platform provides the tools you need to explore crypto trading effectively.`,
-  heroImage = "https://smarts9trading.online/bitcoin-mining-interface-with-hash-rate-charts-and.png",
+  heroImage = "https://smarts9trading.online/Smart.jpg",
   websiteLink = "https://smarts9trading.online",
 }) {
   return (
