@@ -26,7 +26,7 @@ export default function BulkEmailPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          template: "marketing", // handled by backend
+          template: "marketing", // backend handles content
           emails,
         }),
       });
@@ -42,36 +42,64 @@ export default function BulkEmailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 flex justify-center">
-      <div className="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-md">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          📧 Bulk Email Sender (Gmail)
-        </h1>
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-10">
+      <div className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-md p-8">
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 8l9 6 9-6-9-6-9 6z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 8v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8"
+              />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">Bulk Email Sender</h1>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <p className="text-sm text-muted-foreground mb-6 text-center">
+          Send bulk marketing emails directly via Gmail integration.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block font-medium mb-1">Email List</label>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Email List
+            </label>
             <textarea
               value={emails}
               onChange={(e) => setEmails(e.target.value)}
               rows={8}
-              className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-border bg-background rounded-lg p-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-blue-600"
               placeholder="Paste email addresses here (comma, space, or newline separated)"
               required
             />
-            <div className="text-sm text-gray-500 mt-2">or upload file:</div>
+            <div className="text-xs text-muted-foreground mt-2">
+              Or upload from file:
+            </div>
             <input
               type="file"
-              accept=".txt,.csv,.pdf"
+              accept=".txt,.csv"
               onChange={handleFileUpload}
-              className="mt-1 text-sm"
+              className="mt-1 text-sm text-muted-foreground"
             />
           </div>
 
           <button
             type="submit"
             disabled={sending}
-            className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+            className="w-full py-3 rounded-lg font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400 transition-all"
           >
             {sending ? "Sending..." : "Send Emails"}
           </button>
@@ -81,16 +109,18 @@ export default function BulkEmailPage() {
           <div
             className={`mt-6 p-4 rounded-lg border ${
               result.success
-                ? "border-green-400 bg-green-50"
-                : "border-red-400 bg-red-50"
+                ? "border-green-400 bg-green-50 dark:bg-green-900/20"
+                : "border-red-400 bg-red-50 dark:bg-red-900/20"
             }`}
           >
             {result.success ? (
-              <p className="text-green-700 font-medium">
+              <p className="text-green-700 dark:text-green-400 font-medium text-sm text-center">
                 ✅ Sent: {result.sent} | ❌ Failed: {result.failed}
               </p>
             ) : (
-              <p className="text-red-700 font-medium">❌ {result.error}</p>
+              <p className="text-red-700 dark:text-red-400 font-medium text-sm text-center">
+                ❌ {result.error}
+              </p>
             )}
           </div>
         )}
