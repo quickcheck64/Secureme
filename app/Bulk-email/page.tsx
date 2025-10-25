@@ -19,17 +19,30 @@ export default function BulkEmailPage() {
     setSending(true)
     setResult(null)
 
+    // Clean & split emails
+    const emailList = emails
+      .split(/[\n,; ]+/)
+      .map((e) => e.trim())
+      .filter((e) => e.includes("@"))
+
     try {
       const response = await fetch("/api/bulk-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          template: "marketing",
-          emails,
-        }),
+        body: JSON.stringify({ emails: emailList }),
       })
 
       const data = await response.json()
+
+      // If API returns info about sent/failed, handle that
+      if (data.success && Array.isArray(data.failedEmails)) {
+        // Keep only failed ones in textarea
+        setEmails(data.failedEmails.join("\n"))
+      } else if (data.success && data.failed > 0 && data.sent > 0) {
+        // If backend doesn't return the actual failed list, show message only
+        setEmails("") // assume all sent
+      }
+
       setResult(data)
     } catch (err) {
       console.error("Bulk email failed:", err)
@@ -77,9 +90,7 @@ export default function BulkEmailPage() {
               placeholder="Paste email addresses here (comma, space, or newline separated)"
               required
             />
-            <div className="text-xs text-muted-foreground mt-2">
-              Or upload from file:
-            </div>
+            <div className="text-xs text-muted-foreground mt-2">Or upload from file:</div>
             <input
               type="file"
               accept=".txt,.csv"
@@ -88,11 +99,7 @@ export default function BulkEmailPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={sending}
-            className="deposit-button"
-          >
+          <button type="submit" disabled={sending} className="deposit-button">
             {sending ? "Sending..." : "Send Emails"}
           </button>
         </form>
@@ -101,7 +108,9 @@ export default function BulkEmailPage() {
         {result && (
           <div
             className={`mt-6 p-4 rounded-lg border ${
-              result.success ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-red-500 bg-red-50 dark:bg-red-900/20"
+              result.success
+                ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                : "border-red-500 bg-red-50 dark:bg-red-900/20"
             }`}
           >
             {result.success ? (
