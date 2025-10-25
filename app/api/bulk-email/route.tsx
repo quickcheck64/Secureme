@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import MarketingTemplate from "../../../components/email-templates/MarketingTemplate";
 
-export async function POST(request) {
+export async function POST(request: Request) {
   try {
     // ✅ Extract request data
     const { emails } = await request.json();
@@ -27,76 +27,53 @@ export async function POST(request) {
       );
     }
 
-    // 🧩 Split batch (max 30 emails per send)
-    const batchList = emailList.slice(0, 30);
-
-    // ✅ Load multiple Gmail accounts (SMTP_USER_1 ... SMTP_USER_10)
-    const senders = [];
-    for (let i = 1; i <= 10; i++) {
-      const user = process.env[`SMTP_USER_${i}`];
-      const pass = process.env[`SMTP_PASS_${i}`];
-      if (user && pass) senders.push({ user, pass });
-    }
-
-    // fallback (in case you only have 1 Gmail)
-    if (senders.length === 0 && process.env.SMTP_USER && process.env.SMTP_PASS) {
-      senders.push({ user: process.env.SMTP_USER, pass: process.env.SMTP_PASS });
-    }
-
-    if (senders.length === 0) {
+    // ✅ Gmail SMTP setup
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+    if (!smtpUser || !smtpPass) {
       return new Response(
-        JSON.stringify({ success: false, error: "No Gmail accounts configured" }),
+        JSON.stringify({ success: false, error: "Gmail SMTP not configured" }),
         { status: 500 }
       );
     }
 
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user: smtpUser, pass: smtpPass },
+    });
+
+    // ✅ Render the fixed email template (handles message + CTA)
     const subject = "New Investment Opportunity";
     const html = render(<MarketingTemplate />);
 
-    let sent = [];
-    let failed = [];
+    // ✅ Send emails sequentially
+    let sentCount = 0;
+    let failedCount = 0;
 
-    // 🚀 Assign 3 emails per sender
-    for (let i = 0; i < batchList.length; i++) {
-      const senderIndex = Math.floor(i / 3) % senders.length;
-      const { user, pass } = senders[senderIndex];
-
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: { user, pass },
-      });
-
-      const email = batchList[i];
-
+    for (const email of emailList) {
       try {
         await transporter.sendMail({
-          from: `"Smart S9Trading" <${user}>`,
+          from: `"Smart S9Trading" <${smtpUser}>`,
           to: email,
           subject,
           html,
         });
-        console.log(`✅ Sent to ${email} (via ${user})`);
-        sent.push(email);
-      } catch (err) {
-        console.error(`❌ Failed to send to ${email} (${user}):`, err.message);
-        failed.push(email);
+        console.log(`✅ Sent to ${email}`);
+        sentCount++;
+      } catch (err: any) {
+        console.error(`❌ Failed to send to ${email}:`, err.message);
+        failedCount++;
       }
 
-      // ⏳ Delay to avoid Gmail spam trigger
-      await new Promise((res) => setTimeout(res, 2000));
+      // ⏳ delay between sends (avoid Gmail spam filter)
+      await new Promise((res) => setTimeout(res, 1500));
     }
 
-    // ✅ Return result to frontend
     return new Response(
-      JSON.stringify({
-        success: true,
-        sent,
-        failed,
-        remainingCount: emailList.length - batchList.length,
-      }),
+      JSON.stringify({ success: true, sent: sentCount, failed: failedCount }),
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Bulk Gmail error:", error);
     return new Response(
       JSON.stringify({
